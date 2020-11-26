@@ -1,4 +1,4 @@
-package Jama;
+package com.team1678.lib.Jama;
 
    /** LU Decomposition.
    <P>
@@ -104,7 +104,7 @@ public class LUDecomposition implements java.io.Serializable {
 
          // Compute multipliers.
          
-         if (j < m & LU[j][j] != 0.0) {
+         if (j < m && LU[j][j] != 0.0) {
             for (int i = j+1; i < m; i++) {
                LU[i][j] /= LU[j][j];
             }

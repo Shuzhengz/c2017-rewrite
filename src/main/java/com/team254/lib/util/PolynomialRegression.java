@@ -11,8 +11,8 @@ package com.team254.lib.util;
  *
  ******************************************************************************/
 
-import Jama.Matrix;
-import Jama.QRDecomposition;
+import com.team1678.lib.Jama.Matrix;
+import com.team1678.lib.Jama.QRDecomposition;
 
 /**
  * The {@code PolynomialRegression} class performs a polynomial regression on an set of <em>N</em> data points (
