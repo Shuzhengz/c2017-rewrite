@@ -5,11 +5,25 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot;
+package com.team1678.frc2017;
 
-import edu.wpi.first.wpilibj.TimedRobot;
+import com.team254.lib.wpilib.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+//import com.team1678.frc2017.auto.AutoModeExecutor;
+//import com.team1678.frc2017.auto.modes.AutoModeBase;
+//import com.team1678.frc2017.controlboard.ControlBoard;
+//import com.team1678.frc2017.loops.Looper;
+//import com.team1678.frc2017.paths.TrajectoryGenerator;
+//import com.team1678.frc2017.controlboard.ControlBoard;
+//import com.team1678.frc2017.controlboard.GamepadButtonControlBoard;
+//import com.team1678.frc2017.logger.LoggingSystem;
+//import com.team1678.frc2017.SubsystemManager;
+//import com.team1678.frc2017.subsystems.*;
+//import com.team1678.frc2017.SubsystemManager;
+//import com.team1678.frc2017.subsystems.*;
+//import com.team1678.frc2017.subsystems.Indexer.WantedAction;
 
 /**
  * The VM is configured to automatically run this class, and to call the
