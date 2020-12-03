@@ -48,9 +48,8 @@ public class TimedRobot extends IterativeRobotBase {
         HAL.report(tResourceType.kResourceType_Framework, tInstances.kFramework_Timed);
     }
 
-    @Override
     @SuppressWarnings("NoFinalizer")
-    protected void finalize() {
+    protected void trFinalize() {
         NotifierJNI.stopNotifier(m_notifier);
         NotifierJNI.cleanNotifier(m_notifier);
     }

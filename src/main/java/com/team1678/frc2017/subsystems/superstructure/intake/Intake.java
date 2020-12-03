@@ -1,4 +1,4 @@
-package com.team1678.frc2017.subsystems;
+package com.team1678.frc2017.subsystems.superstructure.intake;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -6,14 +6,12 @@ import com.team1678.frc2017.Constants;
 import com.team1678.frc2017.loops.ILooper;
 import com.team1678.frc2017.loops.Loop;
 
+import com.team1678.frc2017.subsystems.Subsystem;
 import com.team254.lib.drivers.TalonFXFactory;
 import com.team254.lib.util.TimeDelayedBoolean;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import java.util.ArrayList;
 
 public class Intake extends Subsystem {
     private static double kIntakingVoltage = 9.0;

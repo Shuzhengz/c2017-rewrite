@@ -1,24 +1,19 @@
-package com.team1678.frc2017.subsystems;
+package com.team1678.frc2017.subsystems.superstructure.shooter;
 
 import com.team1678.frc2017.Constants;
 import com.team1678.frc2017.loops.ILooper;
 import com.team1678.frc2017.loops.Loop;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 
-import edu.wpi.first.wpilibj.Solenoid;
+import com.team1678.frc2017.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.team254.lib.drivers.TalonFXFactory;
 import com.team254.lib.util.Util;
-
-import java.util.ArrayList;
 
 public class Shooter extends Subsystem {
     private static Shooter mInstance;

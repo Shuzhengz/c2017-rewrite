@@ -1,17 +1,15 @@
-package com.team1678.frc2017.subsystems;
+package com.team1678.frc2017.subsystems.superstructure.shooter;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import com.team1678.frc2017.Constants;
 import com.team1678.frc2017.subsystems.Canifier;
+import com.team1678.frc2017.subsystems.ServoMotorSubsystem;
 import com.team254.lib.drivers.MotorChecker;
 import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.team254.lib.drivers.BaseTalonChecker;
 
-import com.team254.lib.drivers.TalonUtil;
 import com.team254.lib.util.Util;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

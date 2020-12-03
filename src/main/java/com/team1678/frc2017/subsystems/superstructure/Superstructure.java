@@ -1,4 +1,4 @@
-package com.team1678.frc2017.subsystems;
+package com.team1678.frc2017.subsystems.superstructure;
 
 import java.util.Optional;
 
@@ -7,6 +7,12 @@ import com.team1678.frc2017.RobotState;
 import com.team1678.frc2017.loops.ILooper;
 import com.team1678.frc2017.loops.Loop;
 import com.team1678.frc2017.states.SuperstructureConstants;
+import com.team1678.frc2017.subsystems.*;
+import com.team1678.frc2017.subsystems.superstructure.indexer.Indexer;
+import com.team1678.frc2017.subsystems.superstructure.intake.Intake;
+import com.team1678.frc2017.subsystems.superstructure.shooter.Hood;
+import com.team1678.frc2017.subsystems.superstructure.shooter.Shooter;
+import com.team1678.frc2017.subsystems.superstructure.trigger.Trigger;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Twist2d;

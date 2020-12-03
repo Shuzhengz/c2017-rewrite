@@ -5,6 +5,8 @@ import com.team1678.frc2017.RobotState;
 import com.team1678.frc2017.loops.Loop;
 import com.team1678.frc2017.loops.ILooper;
 
+import com.team1678.frc2017.subsystems.superstructure.Superstructure;
+import com.team1678.frc2017.subsystems.superstructure.shooter.Hood;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -13,7 +15,6 @@ import com.team254.lib.vision.TargetInfo;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
