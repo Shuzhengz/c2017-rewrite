@@ -14,6 +14,14 @@ import com.team1678.frc2017.loops.Looper;
 import com.team1678.frc2017.paths.TrajectoryGenerator;
 import com.team1678.frc2017.controlboard.ControlBoard;
 import com.team1678.frc2017.controlboard.GamepadButtonControlBoard;
+import com.team1678.frc2017.subsystems.superstructure.Superstructure;
+import com.team1678.frc2017.subsystems.superstructure.climber.Climber;
+import com.team1678.frc2017.subsystems.superstructure.gearIntake.GearIntake;
+import com.team1678.frc2017.subsystems.superstructure.indexer.Indexer;
+import com.team1678.frc2017.subsystems.superstructure.intake.Intake;
+import com.team1678.frc2017.subsystems.superstructure.shooter.Hood;
+import com.team1678.frc2017.subsystems.superstructure.shooter.Shooter;
+import com.team1678.frc2017.subsystems.superstructure.trigger.Trigger;
 import com.team254.lib.wpilib.TimedRobot;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1678.frc2017.SubsystemManager;
@@ -40,7 +48,7 @@ import edu.wpi.first.wpilibj.Joystick;
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot<Turret> extends TimedRobot {
 
   private final Looper mEnabledLooper = new Looper();
   private final Looper mDisabledLooper = new Looper();
@@ -52,18 +60,16 @@ public class Robot extends TimedRobot {
   private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
   private final Drive mDrive = Drive.getInstance();
   private final Indexer mIndexer = Indexer.getInstance();
-  private final Infrastructure mInfrastructure = Infrastructure.getInstance();
+  //private final Infrastructure mInfrastructure = Infrastructure.getInstance();
   private final Limelight mLimelight = Limelight.getInstance();
 
   private final Intake mIntake = Intake.getInstance();
   private final GearIntake mGearIntake = GearIntake.getInstance();
   private final Superstructure mSuperstructure = Superstructure.getInstance();
-  private final Turret mTurret = Turret.getInstance();
   private final Shooter mShooter = Shooter.getInstance();
   private final Trigger mTrigger = Trigger.getInstance();
   private final Climber mClimber = Climber.getInstance();
   private final Hood mHood = Hood.getInstance();
-  private final Wrangler mWrangler = Wrangler.getInstance();
 
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
