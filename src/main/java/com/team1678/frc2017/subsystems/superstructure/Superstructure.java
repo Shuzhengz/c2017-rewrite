@@ -10,6 +10,7 @@ import com.team1678.frc2017.states.SuperstructureConstants;
 import com.team1678.frc2017.subsystems.*;
 import com.team1678.frc2017.subsystems.superstructure.indexer.Indexer;
 import com.team1678.frc2017.subsystems.superstructure.intake.Intake;
+import com.team1678.frc2017.subsystems.superstructure.gearIntake.GearIntake;
 import com.team1678.frc2017.subsystems.superstructure.shooter.Hood;
 import com.team1678.frc2017.subsystems.superstructure.shooter.Shooter;
 import com.team1678.frc2017.subsystems.superstructure.trigger.Trigger;
@@ -30,7 +31,6 @@ public class Superstructure extends Subsystem {
 
     // Instances
     private static Superstructure mInstance;
-
     private final Shooter mShooter = Shooter.getInstance();
     private final Trigger mTrigger = Trigger.getInstance();
     private final Hood mHood = Hood.getInstance();
@@ -404,6 +404,11 @@ public class Superstructure extends Subsystem {
         boolean real_popout = false;
 
         if (Intake.getInstance().getState() == Intake.State.INTAKING) {
+            indexerAction = Indexer.WantedAction.PASSIVE_INDEX;
+            real_trigger = -600.0;
+        }
+
+        if (GearIntake.getInstance().getState() == GearIntake.State.INTAKING) {
             indexerAction = Indexer.WantedAction.PASSIVE_INDEX;
             real_trigger = -600.0;
         }

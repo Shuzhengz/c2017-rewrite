@@ -60,6 +60,18 @@ public class Constants {
     public static final int kWinchMasterId = 11;
     public static final int kWinchSlaveId = 12;
 
+    //GearIntake
+    public static final int kGearIntakeRollerId = 15;
+    public static final int kDeploySolenoidId = 0;
+    public static final double kIntakeVoltage = 12.0;
+    public static final double kPickupVoltage = 2.5;
+    public static final double kCarryVoltage = 1.5;
+    public static final double kScoreVoltage = -12.0;
+    public static final double kOuttakeVoltage = -4.0;
+    public static final int kPickupTicks = 300;
+    public static final double kCurrentThreshold = 60.0;
+
+
     // wrangler
     public static final int kWranglerId = 13;
     public static final int kWranglerSolenoidId = 3;
@@ -75,7 +87,7 @@ public class Constants {
 
     // Intake
     public static final int kIntakeRollerId = 15;
-    public static final int kDeploySolenoidId = 0;
+    public static final int kDeployGearSolenoidId = 0;
 
     // Color Panel
     public static final int kColorPanelID = 14;

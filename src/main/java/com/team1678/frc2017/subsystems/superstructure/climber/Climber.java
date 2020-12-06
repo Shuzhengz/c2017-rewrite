@@ -24,7 +24,7 @@ public class Climber extends Subsystem {
     private static final double kIdleVoltage = 0.0;
     private static final double kPivotVoltage = -8.0;
     private static final double kExtendVoltage = 2.0;
-    private static final double kClimbVoltage = -4.0;
+    private static final double kClimbVoltage = -12.0;
     private static final double kBrakeVelocity = 500.0;
     private static final double kPivotWaitTime = 0.5;
     private double mInitialTime;
