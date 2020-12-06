@@ -7,14 +7,31 @@
 
 package com.team1678.frc2017;
 
+import java.util.Optional;
+
+import com.team1678.frc2017.controlboard.ControlBoard;
+import com.team1678.frc2017.loops.Looper;
+import com.team1678.frc2017.paths.TrajectoryGenerator;
+import com.team1678.frc2017.controlboard.ControlBoard;
+import com.team1678.frc2017.controlboard.GamepadButtonControlBoard;
+import com.team254.lib.wpilib.TimedRobot;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.team1678.frc2017.SubsystemManager;
+import com.team1678.frc2017.subsystems.*;
+import com.team254.lib.util.*;
 import com.team254.lib.wpilib.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.cscore.MjpegServer;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoMode;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Joystick;
 
 //import com.team1678.frc2017.auto.AutoModeExecutor;
 //import com.team1678.frc2017.auto.modes.AutoModeBase;
-import com.team1678.frc2017.paths.TrajectoryGenerator;
-import com.team1678.frc2017.SubsystemManager;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,6 +41,30 @@ import com.team1678.frc2017.SubsystemManager;
  * project.
  */
 public class Robot extends TimedRobot {
+
+  private final Looper mEnabledLooper = new Looper();
+  private final Looper mDisabledLooper = new Looper();
+
+  private final ControlBoard mControlBoard = ControlBoard.getInstance();
+  private CheesyDriveHelper mCheesyDriveHelper = new CheesyDriveHelper();
+  private TrajectoryGenerator mTrajectoryGenerator = TrajectoryGenerator.getInstance();
+
+  private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
+  private final Drive mDrive = Drive.getInstance();
+  private final Indexer mIndexer = Indexer.getInstance();
+  private final Infrastructure mInfrastructure = Infrastructure.getInstance();
+  private final Limelight mLimelight = Limelight.getInstance();
+
+  private final Intake mIntake = Intake.getInstance();
+  private final GearIntake mGearIntake = GearIntake.getInstance();
+  private final Superstructure mSuperstructure = Superstructure.getInstance();
+  private final Turret mTurret = Turret.getInstance();
+  private final Shooter mShooter = Shooter.getInstance();
+  private final Trigger mTrigger = Trigger.getInstance();
+  private final Climber mClimber = Climber.getInstance();
+  private final Hood mHood = Hood.getInstance();
+  private final Wrangler mWrangler = Wrangler.getInstance();
+
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
