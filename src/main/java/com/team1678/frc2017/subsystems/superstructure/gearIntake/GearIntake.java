@@ -1,21 +1,18 @@
 package com.team1678.frc2017.subsystems.superstructure.gearIntake;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.team1678.frc2017.Constants;
 import com.team1678.frc2017.loops.ILooper;
 import com.team1678.frc2017.loops.Loop;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
-
 import com.team1678.frc2017.subsystems.Subsystem;
-import com.team1678.frc2017.subsystems.superstructure.Superstructure;
-import com.team1678.frc2017.subsystems.superstructure.shooter.Shooter;
+
 import com.team254.lib.drivers.TalonFXFactory;
 import com.team254.lib.util.ReflectingCSVWriter;
 import com.team254.lib.util.TimeDelayedBoolean;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -70,11 +67,11 @@ public class GearIntake extends Subsystem {
         }
         return mInstance;
     }
+
     @Override
     public void stop() {
-
+        mMaster.set(ControlMode.PercentOutput, 0);
     }
-
 
     @Override
     public boolean checkSystem() {
@@ -83,6 +80,9 @@ public class GearIntake extends Subsystem {
 
     @Override
     public void outputTelemetry() {
+        SmartDashboard.putNumber("Gear Intake Current", mPeriodicIO.current);
+        SmartDashboard.putString("Gear Intake State", mState.toString());
+
         if (mCSVWriter != null) {
             mCSVWriter.write();
         }
