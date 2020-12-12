@@ -36,17 +36,6 @@ public class Intake extends Subsystem {
 
     private final TalonFX mMaster;
 
-    public static class PeriodicIO {
-        // INPUTS
-        public double timestamp;
-        public double current;
-        public boolean intake_out;
-
-        // OUTPUTS
-        public double demand;
-        public boolean deploy;
-    }
-
     private Intake() {
         mMaster = TalonFXFactory.createDefaultTalon(Constants.kIntakeRollerId);
         mDeploySolenoid = Constants.makeSolenoidForId(Constants.kDeploySolenoidId);
@@ -171,5 +160,16 @@ public class Intake extends Subsystem {
     @Override
     public boolean checkSystem() {
         return true;
+    }
+
+    public static class PeriodicIO {
+        // INPUTS
+        public double timestamp;
+        public double current;
+        public boolean intake_out;
+
+        // OUTPUTS
+        public double demand;
+        public boolean deploy;
     }
 }

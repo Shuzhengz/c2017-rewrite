@@ -63,14 +63,6 @@ public class Constants {
     //GearIntake
     public static final int kGearIntakeRollerId = 15;
     public static final int kDeploySolenoidId = 0;
-    public static final double kIntakeVoltage = 12.0;
-    public static final double kPickupVoltage = 2.5;
-    public static final double kCarryVoltage = 1.5;
-    public static final double kScoreVoltage = -12.0;
-    public static final double kOuttakeVoltage = -4.0;
-    public static final int kPickupTicks = 300;
-    public static final double kCurrentThreshold = 60.0;
-
 
     // wrangler
     public static final int kWranglerId = 13;
