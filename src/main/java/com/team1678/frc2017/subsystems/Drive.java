@@ -523,29 +523,26 @@ public class Drive extends Subsystem {
     }
 
     public synchronized void reloadGains() {
-        mLeftMaster.config_kP(kVelocityControlSlot, Constants.kDriveVelocityKp, Constants.kLongCANTimeoutMs);
-        mLeftMaster.config_kI(kVelocityControlSlot, Constants.kDriveVelocityKi, Constants.kLongCANTimeoutMs);
-        mLeftMaster.config_kD(kVelocityControlSlot, Constants.kDriveVelocityKd, Constants.kLongCANTimeoutMs);
-        mLeftMaster.config_kF(kVelocityControlSlot, Constants.kDriveVelocityKf, Constants.kLongCANTimeoutMs);
-        mLeftMaster.config_IntegralZone(kVelocityControlSlot, Constants.kDriveVelocityIZone, Constants.kLongCANTimeoutMs);
+        motorConfigVD(mLeftMaster);
+        motorConfigVD(mRightMaster);
+        motorConfigPD(mLeftMaster);
+        motorConfigPD(mRightMaster);
+    }
 
-        mRightMaster.config_kP(kVelocityControlSlot, Constants.kDriveVelocityKp, Constants.kLongCANTimeoutMs);
-        mRightMaster.config_kI(kVelocityControlSlot, Constants.kDriveVelocityKi, Constants.kLongCANTimeoutMs);
-        mRightMaster.config_kD(kVelocityControlSlot, Constants.kDriveVelocityKd, Constants.kLongCANTimeoutMs);
-        mRightMaster.config_kF(kVelocityControlSlot, Constants.kDriveVelocityKf, Constants.kLongCANTimeoutMs);
-        mRightMaster.config_IntegralZone(kVelocityControlSlot, Constants.kDriveVelocityIZone, Constants.kLongCANTimeoutMs);
-
+    private void motorConfigPD(TalonFX mLeftMaster) {
         mLeftMaster.config_kP(kPositionControlSlot, Constants.kDrivePositionKp, Constants.kLongCANTimeoutMs);
         mLeftMaster.config_kI(kPositionControlSlot, Constants.kDrivePositionKi, Constants.kLongCANTimeoutMs);
         mLeftMaster.config_kD(kPositionControlSlot, Constants.kDrivePositionKd, Constants.kLongCANTimeoutMs);
         mLeftMaster.config_kF(kPositionControlSlot, Constants.kDrivePositionKf, Constants.kLongCANTimeoutMs);
         mLeftMaster.config_IntegralZone(kPositionControlSlot, Constants.kDrivePositionIZone, Constants.kLongCANTimeoutMs);
+    }
 
-        mRightMaster.config_kP(kPositionControlSlot, Constants.kDrivePositionKp, Constants.kLongCANTimeoutMs);
-        mRightMaster.config_kI(kPositionControlSlot, Constants.kDrivePositionKi, Constants.kLongCANTimeoutMs);
-        mRightMaster.config_kD(kPositionControlSlot, Constants.kDrivePositionKd, Constants.kLongCANTimeoutMs);
-        mRightMaster.config_kF(kPositionControlSlot, Constants.kDrivePositionKf, Constants.kLongCANTimeoutMs);
-        mRightMaster.config_IntegralZone(kPositionControlSlot, Constants.kDrivePositionIZone, Constants.kLongCANTimeoutMs);
+    private void motorConfigVD(TalonFX mLeftMaster) {
+        mLeftMaster.config_kP(kVelocityControlSlot, Constants.kDriveVelocityKp, Constants.kLongCANTimeoutMs);
+        mLeftMaster.config_kI(kVelocityControlSlot, Constants.kDriveVelocityKi, Constants.kLongCANTimeoutMs);
+        mLeftMaster.config_kD(kVelocityControlSlot, Constants.kDriveVelocityKd, Constants.kLongCANTimeoutMs);
+        mLeftMaster.config_kF(kVelocityControlSlot, Constants.kDriveVelocityKf, Constants.kLongCANTimeoutMs);
+        mLeftMaster.config_IntegralZone(kVelocityControlSlot, Constants.kDriveVelocityIZone, Constants.kLongCANTimeoutMs);
     }
 
     @Override
@@ -565,21 +562,14 @@ public class Drive extends Subsystem {
         mPeriodicIO.gyro_heading = Rotation2d.fromDegrees(-mPigeon.getFusedHeading()).rotateBy(mGyroOffset);
 
         double deltaLeftTicks = ((mPeriodicIO.left_position_ticks - prevLeftTicks) / (DRIVE_ENCODER_PPR)) * Math.PI;
-        if (deltaLeftTicks > 0.0) {
-            mPeriodicIO.left_distance += deltaLeftTicks * Constants.kDriveWheelDiameterInches;
-        } else {
-            mPeriodicIO.left_distance += deltaLeftTicks * Constants.kDriveWheelDiameterInches;
-        }
+        mPeriodicIO.left_distance += deltaLeftTicks * Constants.kDriveWheelDiameterInches;
 
         double deltaRightTicks = ((mPeriodicIO.right_position_ticks - prevRightTicks) / (DRIVE_ENCODER_PPR)) * Math.PI;
-        if (deltaRightTicks > 0.0) {
-            mPeriodicIO.right_distance += deltaRightTicks * Constants.kDriveWheelDiameterInches;
-        } else {
-            mPeriodicIO.right_distance += deltaRightTicks * Constants.kDriveWheelDiameterInches;
-        }
+        mPeriodicIO.right_distance += deltaRightTicks * Constants.kDriveWheelDiameterInches;
 
-        mPeriodicIO.left_current = mLeftMaster.getOutputCurrent();
-        mPeriodicIO.right_current = mRightMaster.getOutputCurrent();
+        //Deprecated
+        //mPeriodicIO.left_current = mLeftMaster.getOutputCurrent();
+        //mPeriodicIO.right_current = mRightMaster.getOutputCurrent();
 
         // System.out.println("control state: " + mDriveControlState + ", left: " + mPeriodicIO.left_demand + ", right: " + mPeriodicIO.right_demand);
     }

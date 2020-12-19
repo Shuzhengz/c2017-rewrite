@@ -34,6 +34,8 @@ public class Superstructure extends Subsystem {
     private final Shooter mShooter = Shooter.getInstance();
     private final Trigger mTrigger = Trigger.getInstance();
     private final Hood mHood = Hood.getInstance();
+    private final Intake mIntake = Intake.getInstance();
+    private final GearIntake mGearIntake = GearIntake.getInstance();
     private final Indexer mIndexer = Indexer.getInstance();
     private final RobotState mRobotState = RobotState.getInstance();
     private boolean mAutoIndex = false;
