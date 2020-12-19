@@ -25,9 +25,6 @@
     <list default="true" id="ff4a333e-cd70-4132-9132-734ad29d7691" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/Drive.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/Drive.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/superstructure/Superstructure.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/superstructure/Superstructure.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendordeps/Phoenix.json" beforeDir="false" afterPath="$PROJECT_DIR$/vendordeps/Phoenix.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendordeps/REVColorSensorV3.json" beforeDir="false" afterPath="$PROJECT_DIR$/vendordeps/REVColorSensorV3.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -225,7 +222,7 @@
       <workItem from="1608338812383" duration="176000" />
       <workItem from="1608348252087" duration="55000" />
       <workItem from="1608348322169" duration="48000" />
-      <workItem from="1608353431308" duration="1753000" />
+      <workItem from="1608353431308" duration="1849000" />
     </task>
     <servers />
   </component>

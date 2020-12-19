@@ -567,9 +567,8 @@ public class Drive extends Subsystem {
         double deltaRightTicks = ((mPeriodicIO.right_position_ticks - prevRightTicks) / (DRIVE_ENCODER_PPR)) * Math.PI;
         mPeriodicIO.right_distance += deltaRightTicks * Constants.kDriveWheelDiameterInches;
 
-        //Deprecated
-        //mPeriodicIO.left_current = mLeftMaster.getOutputCurrent();
-        //mPeriodicIO.right_current = mRightMaster.getOutputCurrent();
+        mPeriodicIO.left_current = mLeftMaster.getOutputCurrent();
+        mPeriodicIO.right_current = mRightMaster.getOutputCurrent();
 
         // System.out.println("control state: " + mDriveControlState + ", left: " + mPeriodicIO.left_demand + ", right: " + mPeriodicIO.right_demand);
     }
