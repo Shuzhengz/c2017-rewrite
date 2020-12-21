@@ -45,7 +45,6 @@ public class Indexer extends Subsystem {
         public double indexer_angle;
         public double indexer_velocity;
         public double indexer_current;
-        public double turret_angle;
         public boolean snapped;
 
         // OUTPUTS
@@ -256,7 +255,7 @@ public class Indexer extends Subsystem {
             break;
         case PREPPING:
             mPeriodicIO.indexer_control_mode = ControlMode.Velocity;
-            mPeriodicIO.indexer_demand = 0;// mMotionPlanner.findAngleGoal(mSlotGoal, indexer_angle, turret_angle) + (36.0 * (mBackwards ? -1 : 1));
+            mPeriodicIO.indexer_demand = 0;// mMotionPlanner.findAngleGoal(mSlotGoal, indexer_angle, 0) + (36.0 * (mBackwards ? -1 : 1));
             break;
         case REVOLVING:
             mPeriodicIO.indexer_control_mode = ControlMode.MotionMagic;
