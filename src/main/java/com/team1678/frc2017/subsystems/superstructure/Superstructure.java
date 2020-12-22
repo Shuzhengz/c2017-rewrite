@@ -8,7 +8,7 @@ import com.team1678.frc2017.loops.ILooper;
 import com.team1678.frc2017.loops.Loop;
 import com.team1678.frc2017.states.SuperstructureConstants;
 import com.team1678.frc2017.subsystems.*;
-import com.team1678.frc2017.subsystems.superstructure.indexer.Indexer;
+import com.team1678.frc2017.subsystems.superstructure.indexer.Magazine;
 import com.team1678.frc2017.subsystems.superstructure.intake.Intake;
 import com.team1678.frc2017.subsystems.superstructure.gearIntake.GearIntake;
 import com.team1678.frc2017.subsystems.superstructure.shooter.Hood;
@@ -36,7 +36,7 @@ public class Superstructure extends Subsystem {
     private final Hood mHood = Hood.getInstance();
     private final Intake mIntake = Intake.getInstance();
     private final GearIntake mGearIntake = GearIntake.getInstance();
-    private final Indexer mIndexer = Indexer.getInstance();
+    private final Magazine mMagazine = Magazine.getInstance();
     private final RobotState mRobotState = RobotState.getInstance();
     private boolean mAutoIndex = false;
 
@@ -400,28 +400,28 @@ public class Superstructure extends Subsystem {
             mHood.setSetpointMotionMagic(mHoodSetpoint);
         }
 
-        Indexer.WantedAction indexerAction = Indexer.WantedAction.PASSIVE_INDEX;
+        Magazine.WantedAction indexerAction = Magazine.WantedAction.PASSIVE_INDEX;
         double real_trigger = 0.0;
         double real_shooter = 0.0;
         boolean real_popout = false;
 
         if (Intake.getInstance().getState() == Intake.State.INTAKING) {
-            indexerAction = Indexer.WantedAction.PASSIVE_INDEX;
+            indexerAction = Magazine.WantedAction.PASSIVE_INDEX;
             real_trigger = -600.0;
         }
 
         if (GearIntake.getInstance().getState() == GearIntake.State.INTAKING) {
-            indexerAction = Indexer.WantedAction.PASSIVE_INDEX;
+            indexerAction = Magazine.WantedAction.PASSIVE_INDEX;
             real_trigger = -600.0;
         }
 
         if (mWantsSpinUp) {
             real_shooter = mShooterSetpoint;
-            indexerAction = Indexer.WantedAction.PASSIVE_INDEX;
+            indexerAction = Magazine.WantedAction.PASSIVE_INDEX;
             real_trigger = -600.0;
         } else if (mWantsPreShot) {
             real_shooter = mShooterSetpoint;
-            indexerAction = Indexer.WantedAction.HELLA_ZOOM;
+            indexerAction = Magazine.WantedAction.HELLA_ZOOM;
             real_trigger = Constants.kTriggerRPM;
             real_popout = false;
         } else if (mWantsShoot) {
@@ -429,12 +429,12 @@ public class Superstructure extends Subsystem {
 
             if (mLatestAimingParameters.isPresent()) {
                 if (mLatestAimingParameters.get().getRange() > 240.) {
-                    indexerAction = Indexer.WantedAction.SLOW_ZOOM;
+                    indexerAction = Magazine.WantedAction.SLOW_ZOOM;
                 } else {
-                    indexerAction = Indexer.WantedAction.ZOOM;
+                    indexerAction = Magazine.WantedAction.ZOOM;
                 }
             } else {
-                indexerAction = Indexer.WantedAction.ZOOM;
+                indexerAction = Magazine.WantedAction.ZOOM;
             }
             real_trigger = Constants.kTriggerRPM;
 
@@ -449,15 +449,15 @@ public class Superstructure extends Subsystem {
 
         
         if (mWantsUnjam) {
-            indexerAction = Indexer.WantedAction.PREP;
+            indexerAction = Magazine.WantedAction.PREP;
             real_popout = true;
             real_trigger = -5000;
         }
 
         if (mEnableIndexer) {
-            mIndexer.setState(indexerAction);
+            mMagazine.setState(indexerAction);
         } else {
-            mIndexer.setState(Indexer.WantedAction.PREP);
+            mMagazine.setState(Magazine.WantedAction.PREP);
         }
 
         mTrigger.setPopoutSolenoid(real_popout);

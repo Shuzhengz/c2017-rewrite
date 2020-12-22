@@ -9,7 +9,7 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 
 import com.team1678.frc2017.subsystems.Subsystem;
-import com.team1678.frc2017.subsystems.superstructure.indexer.Indexer;
+import com.team1678.frc2017.subsystems.superstructure.indexer.Magazine;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,7 +26,7 @@ public class Trigger extends Subsystem {
     private final TalonFX mTrigger;
     private final Solenoid mPopoutSolenoid;
 
-    private final Indexer mIndexer = Indexer.getInstance();
+    private final Magazine mMagazine = Magazine.getInstance();
 
     private boolean mCurrentLimitTriggered = false;
     private double mCurrentLimitTimer = 0.0;
