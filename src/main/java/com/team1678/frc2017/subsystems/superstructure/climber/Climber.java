@@ -22,25 +22,20 @@ public class Climber extends Subsystem {
     private static Climber mInstance = null;
 
     private static final double kIdleVoltage = 0.0;
-    private static final double kPivotVoltage = -8.0;
-    private static final double kExtendVoltage = 2.0;
-    private static final double kClimbVoltage = -12.0;
-    private static final double kBrakeVelocity = 500.0;
-    private static final double kPivotWaitTime = 0.5;
-    private double mInitialTime;
-
-    private static final int kExtendDelta = (204000 - (-27600));
-    private static final int kHugDelta = (157000 - (-27600));
-    private static final int kClimbDelta = 10000;
+    private static final double kTopVoltage = -2.0;
+    private static final double kClimbingVoltage = -12.0;
+    private static final double kSpinUpVelocity = 0.42;
+    private static final double kStartClimbingVelocity = 0.35;
+    private static final double kFinalVelocity = 0.15;
 
     private PeriodicIO mPeriodicIO = new PeriodicIO();
 
     public enum WantedAction {
-        NONE, PIVOT, EXTEND, MANUAL_EXTEND, HUG, CLIMB, MANUAL_CLIMB, BRAKE, STOP,
+        NONE, SPIN_UP, CLIMB, MANUAL_CLIMB, BRAKE, STOP,
     }
 
     public enum State {
-        IDLE, PIVOTING, EXTENDING, MANUAL_EXTENDING, HUGGING, CLIMBING, MANUAL_CLIMBING, BRAKING,
+        IDLE, SPIN_UP ,APPROACHING ,MANUAL_CLIMBING,  CLIMBING , AT_TOP,
     }
 
     private State mState = State.IDLE;
@@ -55,7 +50,6 @@ public class Climber extends Subsystem {
 
     public StatorCurrentLimitConfiguration STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 40, 40, .2);
     private ReflectingCSVWriter<PeriodicIO> mCSVWriter = null;
-
 
     private Climber() {
         mMaster = TalonFXFactory.createDefaultTalon(Constants.kWinchMasterId);
@@ -129,7 +123,6 @@ public class Climber extends Subsystem {
             @Override
             public void onStart(double timestamp) {
                 mState = State.IDLE;
-                startLogging();
             }
 
             @Override
@@ -142,22 +135,8 @@ public class Climber extends Subsystem {
             @Override
             public void onStop(double timestamp) {
                 mState = State.IDLE;
-                stopLogging();
             }
         });
-    }
-
-    public synchronized void startLogging() {
-        if (mCSVWriter == null) {
-            mCSVWriter = new ReflectingCSVWriter<>("/home/lvuser/CLIMBER-LOGS.csv", PeriodicIO.class);
-        }
-    }
-
-    public synchronized void stopLogging() {
-        if (mCSVWriter != null) {
-            mCSVWriter.flush();
-            mCSVWriter = null;
-        }
     }
 
     public synchronized State getState() {
@@ -181,67 +160,30 @@ public class Climber extends Subsystem {
         switch (mState) {
             case IDLE:
                 mPeriodicIO.demand = kIdleVoltage;
-                mPeriodicIO.arm_solenoid = true;
                 break;
-            case PIVOTING:
-                mPeriodicIO.arm_solenoid = false;
-                mPeriodicIO.demand = kPivotVoltage;
-
-                if (now - mInitialTime > kPivotWaitTime) {
-                    if ((Math.abs(mPeriodicIO.velocity) < kBrakeVelocity)) {
-                        mPeriodicIO.demand = kIdleVoltage;
-                        mZeroPos = mPeriodicIO.position;
-                        mState = State.EXTENDING;
-                    }
+            case SPIN_UP:
+                mPeriodicIO.demand = kClimbingVoltage;
+                if (mPeriodicIO.velocity > kSpinUpVelocity) {
+                    mState = State.APPROACHING;
                 }
-
-                mPeriodicIO.brake_solenoid = false;
-                mZeroPos = mPeriodicIO.position;
                 break;
-            case EXTENDING:
-                mPeriodicIO.demand = mZeroPos + kExtendDelta;
-                if ((mPeriodicIO.position - mZeroPos) > kExtendDelta - 2000) {
-                    mExtended = true;
+            case APPROACHING:
+                mPeriodicIO.demand = kClimbingVoltage;
+                if (mPeriodicIO.velocity < kStartClimbingVelocity) {
+                    mState = State.CLIMBING;
                 }
-                mPeriodicIO.arm_solenoid = true;
-                mPeriodicIO.brake_solenoid = false;
-                break;
-            case MANUAL_EXTENDING:
-                mPeriodicIO.demand = kExtendVoltage;
-                mPeriodicIO.arm_solenoid = true;
-                mPeriodicIO.brake_solenoid = false;
-                break;
-            case HUGGING:
-                if (mExtended) {
-                    mPeriodicIO.demand = mZeroPos + kHugDelta;
-                }
-                mPeriodicIO.arm_solenoid = true;
-                mPeriodicIO.brake_solenoid = false;
                 break;
             case CLIMBING:
-                mPeriodicIO.demand = mZeroPos + kClimbDelta;
-                mPeriodicIO.arm_solenoid = true;
-                mPeriodicIO.brake_solenoid = false;
-
-                if ((Math.abs(mPeriodicIO.position - (mZeroPos + kClimbDelta)) < 5000 && Math.abs(mPeriodicIO.velocity) < kBrakeVelocity)) {
-                    mHoldingPos = mPeriodicIO.position;
-                    mState = State.BRAKING;
+                mPeriodicIO.demand = kClimbingVoltage;
+                if (mPeriodicIO.velocity < kFinalVelocity) {
+                    mState = State.AT_TOP;
                 }
-                mPeriodicIO.brake_solenoid = false;
                 break;
             case MANUAL_CLIMBING:
-                mPeriodicIO.demand = kClimbVoltage;
-                mPeriodicIO.arm_solenoid = true;
-                mPeriodicIO.brake_solenoid = false;
+                mPeriodicIO.demand = kClimbingVoltage;
                 break;
-            case BRAKING:
-                mPeriodicIO.demand = mHoldingPos;
-                mPeriodicIO.arm_solenoid = true;
-                if (!mPeriodicIO.brake_solenoid) {
-                    if (mPeriodicIO.velocity < kBrakeVelocity) {
-                        mPeriodicIO.brake_solenoid = true;
-                    }
-                }
+            case AT_TOP:
+                mPeriodicIO.demand = kTopVoltage;
                 break;
             default:
                 System.out.println("Fell through on Climber states!");
@@ -249,30 +191,17 @@ public class Climber extends Subsystem {
     }
 
     public void setState(WantedAction wanted_state) {
-        if (wanted_state == WantedAction.BRAKE && mState != State.BRAKING) {
+        if (wanted_state == WantedAction.BRAKE && mState != State.AT_TOP) {
             mHoldingPos = mPeriodicIO.position;
-        }
-
-        if (wanted_state == WantedAction.PIVOT && mState != State.PIVOTING) {
-            mInitialTime = Timer.getFPGATimestamp();
         }
         switch (wanted_state) {
             case NONE:
-                if (mState == State.MANUAL_CLIMBING || mState == State.MANUAL_EXTENDING) {
+                if (mState == State.MANUAL_CLIMBING) {
                     mState = State.IDLE;
                 }
                 break;
-            case PIVOT:
-                mState = State.PIVOTING;
-                break;
-            case EXTEND:
-                mState = State.EXTENDING;
-                break;
-            case MANUAL_EXTEND:
-                mState = State.MANUAL_EXTENDING;
-                break;
-            case HUG:
-                mState = State.HUGGING;
+            case SPIN_UP:
+                mState = State.SPIN_UP;
                 break;
             case CLIMB:
                 mState = State.CLIMBING;
@@ -281,7 +210,7 @@ public class Climber extends Subsystem {
                 mState = State.MANUAL_CLIMBING;
                 break;
             case BRAKE:
-                mState = State.BRAKING;
+                mState = State.AT_TOP;
                 break;
             case STOP:
                 mState = State.IDLE;
@@ -306,7 +235,7 @@ public class Climber extends Subsystem {
 
     @Override
     public synchronized void writePeriodicOutputs() {
-        if (mState == State.BRAKING || mState == State.EXTENDING || mState == State.HUGGING || mState == State.CLIMBING) {
+        if (mState == State.SPIN_UP || mState == State.APPROACHING || mState == State.CLIMBING) {
             mMaster.set(ControlMode.MotionMagic, mPeriodicIO.demand);
         } else {
             mMaster.set(ControlMode.PercentOutput, mPeriodicIO.demand / 12.0);

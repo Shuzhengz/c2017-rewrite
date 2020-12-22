@@ -294,23 +294,10 @@ public class Robot<Turret> extends TimedRobot {
         mSuperstructure.setWantPreShot(false);
         mSuperstructure.setWantUnjam(false);
 
-
-        if (mControlBoard.getArmExtend()) { // Press A
-          if (!mPivoted) {
-            System.out.println("PIVOTING");
-            climber_action = (Climber.WantedAction.PIVOT);
-          } else if (mClimber.getState() != Climber.State.PIVOTING) {
-            System.out.println("SKIPPING PIVOT");
-            climber_action = (Climber.WantedAction.EXTEND);
-          }
-
-          mPivoted = true;
-        } else if (mControlBoard.getArmHug()) { // Press B
-          climber_action = (Climber.WantedAction.HUG); // hook onto the rung
+        if (mControlBoard.getArmHug()) { // Press B
+          climber_action = (Climber.WantedAction.SPIN_UP); // hook onto the rung
         } else if (mControlBoard.getClimb()) { // Press Y
           climber_action = (Climber.WantedAction.CLIMB);
-        } else if (mControlBoard.getManualArmExtend()) { // Press and hold left joystick
-          climber_action = (Climber.WantedAction.MANUAL_EXTEND);
         } else if (mControlBoard.getManualArmRetract()) { // Press and hold right joystick
           climber_action = (Climber.WantedAction.MANUAL_CLIMB);
         } else if (mControlBoard.getBrake()) { // Release Y
