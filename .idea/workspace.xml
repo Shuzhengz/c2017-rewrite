@@ -22,7 +22,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ff4a333e-cd70-4132-9132-734ad29d7691" name="Default Changelist" comment="" />
+    <list default="true" id="ff4a333e-cd70-4132-9132-734ad29d7691" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/RobotState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/RobotState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/superstructure/Superstructure.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/superstructure/Superstructure.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/superstructure/indexer/Magazine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/superstructure/indexer/Magazine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/superstructure/trigger/Trigger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/superstructure/trigger/Trigger.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -228,6 +234,7 @@
       <workItem from="1608518948601" duration="1306000" />
       <workItem from="1608520727779" duration="61000" />
       <workItem from="1608598567821" duration="5977000" />
+      <workItem from="1608666805090" duration="3464000" />
     </task>
     <servers />
   </component>

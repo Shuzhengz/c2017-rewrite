@@ -28,6 +28,9 @@ public class Magazine extends Subsystem {
     private static final boolean[] kFullSlots = {true, true, true, true, true };
     private static final boolean[] kEmptySlots = {false, false, false, false, false };
 
+    private boolean front_magazine_extended = false;
+    private boolean side_magazine_extended = false;
+
     private double mIndexerStart = Timer.getFPGATimestamp();
     private static final double kAngleConversion = (2048.0 * kGearRatio) / 360.0;
 
@@ -40,7 +43,11 @@ public class Magazine extends Subsystem {
     private static double lower_voltage = 0;
 
     public enum State {
-        IDLE, FEEDING, ZOOMING, HELLA_ZOOMING,
+        IDLE, FEEDING, ZOOMING, HELLA_ZOOMING, UNZOOMING,
+    }
+
+    public enum WantedAction {
+        NONE, FEED, ZOOM, HELLA_ZOOM, UNZOOM
     }
 
     public enum UpperState {
@@ -52,7 +59,7 @@ public class Magazine extends Subsystem {
     }
 
     public enum LowerState {
-        LOWER_IDLE, LOWER_FORWARD, LOWER_BACKWARD, PREPPING, REVOLVING, ZOOMING, SLOW_ZOOMING, FEEDING, HELLA_ZOOMING,
+        LOWER_IDLE, LOWER_FORWARD, LOWER_BACKWARD,
     }
 
     private boolean mGeneratedGoal = false;
@@ -114,33 +121,26 @@ public class Magazine extends Subsystem {
     }
 
     public boolean atHomingLocation() {
-        calibration.update(mPeriodicIO.indexer_angle, mPeriodicIO.limit_switch);
-        if (calibration.isCalibrated() && !mHasBeenZeroed) {
-            mOffset = mPeriodicIO.indexer_angle + calibration.getOffset();
-            return true;
-        }
-        return false;
+        return true;
     }
 
     @Override
     public synchronized void outputTelemetry() {
         SmartDashboard.putString("IndexerControlMode", mPeriodicIO.indexer_control_mode.name());
-        SmartDashboard.putNumber("IndexerSetpoint", mPeriodicIO.indexer_demand);
-        SmartDashboard.putNumber("IndexerAngle", mPeriodicIO.indexer_angle);
+        SmartDashboard.putNumber("IndexerSetpoint", mPeriodicIO.conveyor_demand);
         SmartDashboard.putBoolean("Indexer Calibrated", calibration.isCalibrated());
         SmartDashboard.putNumber("IndexerVelocity", mPeriodicIO.indexer_velocity);
         SmartDashboard.putNumber("IndexerOffset", mOffset);
 
         SmartDashboard.putNumber("SlotNumberGoal", mSlotGoal);
 
-        SmartDashboard.putString("DirtySlots", Arrays.toString(mPeriodicIO.raw_slots));
         SmartDashboard.putString("CleanSlots", Arrays.toString(mCleanSlots));
         SmartDashboard.putBoolean("Snapped", mPeriodicIO.snapped);
     }
 
     public synchronized void setOpenLoop(double percentage) {
         mPeriodicIO.indexer_control_mode = ControlMode.PercentOutput;
-        mPeriodicIO.indexer_demand = percentage;
+        mPeriodicIO.conveyor_demand = percentage;
     }
 
     @Override
@@ -156,10 +156,6 @@ public class Magazine extends Subsystem {
 
     public synchronized boolean hasBeenZeroed() {
         return mHasBeenZeroed;
-    }
-
-    private void updateSlots(double indexer_angle) {
-        mCleanSlots = mMotionPlanner.updateSlotStatus(indexer_angle, mPeriodicIO.raw_slots);
     }
 
     @Override
@@ -190,10 +186,6 @@ public class Magazine extends Subsystem {
         }
     }
 
-    public synchronized double getIndexerTheta() {
-        return mPeriodicIO.indexer_angle;
-    }
-
     public synchronized void setBackwardsMode(boolean backwards) {
         mBackwards = backwards;
     }
@@ -206,91 +198,23 @@ public class Magazine extends Subsystem {
         return Arrays.equals(mCleanSlots, kEmptySlots);
     }
 
-    public synchronized boolean isAtDeadSpot() {
-        return Math.abs(mPeriodicIO.indexer_angle % 72) - 36 < Constants.kIndexerDeadband;
-    }
-
     public void runStateMachine() {
-        final double indexer_angle = mPeriodicIO.indexer_angle;
         final double now = Timer.getFPGATimestamp();
 
         switch (mState) {
         case IDLE:
             mPeriodicIO.indexer_control_mode = ControlMode.Velocity;
-            mPeriodicIO.indexer_demand = 0;
+            mPeriodicIO.conveyor_demand = 0;
             break;
-        case INDEXING:
-            mPeriodicIO.indexer_control_mode = ControlMode.MotionMagic;
-
-            if (!mGeneratedGoal) {
-                mSlotGoal = mMotionPlanner.findNearestOpenSlot(indexer_angle);
-                mGeneratedGoal = true;
-            }
-            mPeriodicIO.indexer_demand = mMotionPlanner.findAngleGoal(mSlotGoal, indexer_angle, 0);
-
-            if (mMotionPlanner.isAtGoal(mSlotGoal, indexer_angle, 0)) {
-                if (mCleanSlots[mSlotGoal]) {
-                    mGeneratedGoal = false;
-                    // mSlotGoal = mMotionPlanner.findNearestOpenSlot(indexer_angle, mProxyStatus);
-                    // mPeriodicIO.indexer_demand = mMotionPlanner.findAngleGoalToIntake(mSlotGoal,
-                    // indexer_angle);
-                }
-            }
-            break;
-        case PASSIVE_INDEXING:
-            mPeriodicIO.indexer_control_mode = ControlMode.Velocity;
-            mPeriodicIO.indexer_demand = mBackwards ? -kPassiveIndexingVelocity : kPassiveIndexingVelocity;
-
-            //if ((now - mIndexerStart) % 2 < .1) {
-            //    mPeriodicIO.indexer_demand *= -1;
-            //}
-
-            break;
-        case PREPPING:
-            mPeriodicIO.indexer_control_mode = ControlMode.Velocity;
-            mPeriodicIO.indexer_demand = 0;// mMotionPlanner.findAngleGoal(mSlotGoal, indexer_angle, 0) + (36.0 * (mBackwards ? -1 : 1));
-            break;
-        case REVOLVING:
-            mPeriodicIO.indexer_control_mode = ControlMode.MotionMagic;
-
-            if (!mBackwards) {
-                mSlotGoal = mMotionPlanner.findNextSlot(indexer_angle, 0);
-            } else {
-                mSlotGoal = mMotionPlanner.findPreviousSlot(indexer_angle, 0);
-            }
-
-            mPeriodicIO.indexer_demand = mMotionPlanner.findAngleGoal(mSlotGoal, indexer_angle, 0);
-
-            if (mMotionPlanner.isAtGoal(mSlotGoal, indexer_angle, 0)) {
-                mState = State.FEEDING;
-            }
+        case FEEDING:
             break;
         case ZOOMING:
             mPeriodicIO.indexer_control_mode = ControlMode.Velocity;
-            mPeriodicIO.indexer_demand = mBackwards ? -kZoomingVelocity : kZoomingVelocity;
-            break;
-        case SLOW_ZOOMING:
-            mPeriodicIO.indexer_control_mode = ControlMode.Velocity;
-            mPeriodicIO.indexer_demand = (mBackwards ? -kZoomingVelocity : kZoomingVelocity) * 0.3;
+            mPeriodicIO.conveyor_demand = mBackwards ? -kZoomingVelocity : kZoomingVelocity;
             break;
         case HELLA_ZOOMING:
             mPeriodicIO.indexer_control_mode = ControlMode.Velocity;
-            mPeriodicIO.indexer_demand = (mBackwards ? -kZoomingVelocity : kZoomingVelocity) * 1.5;
-            break;
-        case FEEDING:
-            mPeriodicIO.indexer_control_mode = ControlMode.MotionMagic;
-            if (mMotionPlanner.isAtGoal(mSlotGoal, indexer_angle, 0)) {
-                if (!mStartCounting) {
-                    mInitialTime = now;
-                    mStartCounting = true;
-                }
-                if (mStartCounting && now - mInitialTime > mWaitTime) {
-                    mState = State.REVOLVING;
-                    mStartCounting = false;
-                }
-            }
-
-            mPeriodicIO.indexer_demand = mMotionPlanner.findAngleGoal(mSlotGoal, indexer_angle, 0);
+            mPeriodicIO.conveyor_demand = (mBackwards ? -kZoomingVelocity : kZoomingVelocity) * 1.5;
             break;
         default:
             System.out.println("Fell through on Indexer states!");
@@ -299,7 +223,7 @@ public class Magazine extends Subsystem {
 
     public double getIndexerVelocity() {
         if (mPeriodicIO.indexer_control_mode == ControlMode.Velocity) {
-            return mPeriodicIO.indexer_demand;
+            return mPeriodicIO.conveyor_demand;
         } else {
             return 0;
         }
@@ -308,39 +232,21 @@ public class Magazine extends Subsystem {
     public void setState(WantedAction wanted_state) {
         final State prev_state = mState;
         switch (wanted_state) {
-        case NONE:
-            mState = State.IDLE;
-            break;
-        case INDEX:
-            mState = State.INDEXING;
-            break;
-        case PASSIVE_INDEX:
-            mState = State.PASSIVE_INDEXING;
-            break;
-        case PREP:
-            mState = State.PREPPING;
-            break;
-        case REVOLVE:
-            mState = State.REVOLVING;
-            break;
-        case ZOOM:
-            mState = State.ZOOMING;
-            break;
-        case SLOW_ZOOM:
-            mState = State.SLOW_ZOOMING;
-            break;
-        case HELLA_ZOOM:
-            mState = State.HELLA_ZOOMING;
-            break;
-        }
-
-        if (mState != prev_state && mState != State.REVOLVING && mState != State.INDEXING) {
-            mSlotGoal = mMotionPlanner.findNearestSlot(mPeriodicIO.indexer_angle, 0);
-        }
-
-        if (mState != prev_state && mState == State.PASSIVE_INDEXING) {
-            mIndexerStart = Timer.getFPGATimestamp();
-            mBackwards = !mBackwards;
+            case NONE:
+                mState = State.IDLE;
+                break;
+            case FEED:
+                mState = State.FEEDING;
+                break;
+            case ZOOM:
+                mState = State.ZOOMING;
+                break;
+            case HELLA_ZOOM:
+                mState = State.HELLA_ZOOMING;
+                break;
+            case UNZOOM:
+                mState = State.UNZOOMING;
+                break;
         }
 
         if (mState != prev_state && mState == State.ZOOMING) {
@@ -350,25 +256,87 @@ public class Magazine extends Subsystem {
         }
     }
 
+    public void setState(UpperState upper_state) {
+        final State prev_state = mState;
+        switch (upper_state) {
+        case UPPER_IDLE:
+            upper_voltage = 0;
+            mState = State.IDLE;
+            break;
+        case UPPER_FORWARD:
+            upper_voltage = 12;
+            mState = State.ZOOMING;
+            break;
+        case UPPER_BACKWARD:
+            upper_voltage = -4;
+            mState = State.ZOOMING;
+            break;
+        }
+
+        if (mState != prev_state && (mState == State.ZOOMING || mState == State.HELLA_ZOOMING)) {
+            mMaster.configClosedloopRamp(0.2, 0);
+        } else if (mState != prev_state) {
+            mMaster.configClosedloopRamp(0.0, 0);
+        }
+    }
+
+    public void setState(SideState side_state) {
+        final State prev_state = mState;
+        switch (side_state) {
+            case SIDE_IDLE:
+                upper_voltage = 0;
+                mState = State.IDLE;
+                break;
+            case SIDE_AGITATE:
+                upper_voltage = 6;
+                mState = State.ZOOMING;
+                break;
+            case SIDE_PULL_IN:
+                upper_voltage = -6;
+                mState = State.ZOOMING;
+                break;
+        }
+
+        if (mState != prev_state && (mState == State.ZOOMING || mState == State.HELLA_ZOOMING)) {
+            mMaster.configClosedloopRamp(0.2, 0);
+        } else if (mState != prev_state) {
+            mMaster.configClosedloopRamp(0.0, 0);
+        }
+    }
+
+    public void setState(LowerState lower_state) {
+        final State prev_state = mState;
+        switch (lower_state) {
+            case LOWER_IDLE:
+                upper_voltage = 0;
+                mState = State.IDLE;
+                break;
+            case LOWER_FORWARD:
+                upper_voltage = 12;
+                mState = State.ZOOMING;
+                break;
+            case LOWER_BACKWARD:
+                upper_voltage = -12;
+                mState = State.ZOOMING;
+                break;
+        }
+
+        if (mState != prev_state && (mState == State.ZOOMING || mState == State.HELLA_ZOOMING)) {
+            mMaster.configClosedloopRamp(0.2, 0);
+        } else if (mState != prev_state) {
+            mMaster.configClosedloopRamp(0.0, 0);
+        }
+    }
+
     @Override
     public synchronized void readPeriodicInputs() {
         mPeriodicIO.timestamp = Timer.getFPGATimestamp();
-        mPeriodicIO.raw_slots[0] = mSlot0Proxy.get();
-        mPeriodicIO.raw_slots[1] = mSlot1Proxy.get();
-        mPeriodicIO.raw_slots[2] = mSlot2Proxy.get();
-        mPeriodicIO.raw_slots[3] = mSlot3Proxy.get();
-        mPeriodicIO.raw_slots[4] = mSlot4Proxy.get();
         mPeriodicIO.limit_switch = !mLimitSwitch.get();
         mPeriodicIO.indexer_velocity = mMaster.getSelectedSensorVelocity(0) * 600. / 2048. / kGearRatio;
         mPeriodicIO.indexer_current = mMaster.getStatorCurrent();
+        mPeriodicIO.side_mag_extended = side_magazine_extended;
+        mPeriodicIO.front_mag_extended = front_magazine_extended;
 
-        mPeriodicIO.indexer_angle = mMaster.getSelectedSensorPosition(0) / kAngleConversion;
-        final double indexer_angle = mPeriodicIO.indexer_angle;
-        mPeriodicIO.snapped = mMotionPlanner.isSnapped(indexer_angle);
-
-        if (mMotionPlanner.isSnapped(indexer_angle)) {
-            updateSlots(indexer_angle);
-        }
         if (atHomingLocation() && !mHasBeenZeroed) {
             mMaster.setSelectedSensorPosition((int) Math.floor(mOffset * kAngleConversion));
             mMaster.overrideSoftLimitsEnable(true);
@@ -385,10 +353,10 @@ public class Magazine extends Subsystem {
                 mLastCurrentSpikeTime = Timer.getFPGATimestamp();
             }
             mMaster.selectProfileSlot(1, 0);
-            mMaster.set(mPeriodicIO.indexer_control_mode, (mPeriodicIO.indexer_demand / 600.0) * kGearRatio * 2048.0);
+            mMaster.set(mPeriodicIO.indexer_control_mode, (mPeriodicIO.conveyor_demand / 600.0) * kGearRatio * 2048.0);
         } else if (mPeriodicIO.indexer_control_mode == ControlMode.MotionMagic) {
             mMaster.selectProfileSlot(0, 0);
-            mMaster.set(mPeriodicIO.indexer_control_mode, (mPeriodicIO.indexer_demand / 360.0) * kGearRatio * 2048.0);
+            mMaster.set(mPeriodicIO.indexer_control_mode, (mPeriodicIO.conveyor_demand / 360.0) * kGearRatio * 2048.0);
         }
     }
 
@@ -397,18 +365,20 @@ public class Magazine extends Subsystem {
         return true;
     }
 
+
     public static class PeriodicIO {
         // INPUTS
         public double timestamp;
-        private boolean[] raw_slots = { false, false, false, false, false };
         public boolean limit_switch;
 
         public double indexer_velocity;
         public double indexer_current;
         public boolean snapped;
+        public boolean side_mag_extended;
+        public boolean front_mag_extended;
 
         // OUTPUTS
         public ControlMode indexer_control_mode = ControlMode.PercentOutput;
-        public double indexer_demand;
+        public double conveyor_demand;
     }
 }

@@ -255,19 +255,6 @@ public class Superstructure extends Subsystem {
     }
 
     public void safetyReset() {
-        if (mTurretSetpoint < Constants.kTurretConstants.kMinUnitsLimit) {
-            mTurretSetpoint += SuperstructureConstants.kTurretDOF;
-            Limelight.getInstance().setLed(Limelight.LedMode.OFF);
-            mDisableLimelight = true;
-        } else if (mTurretSetpoint > Constants.kTurretConstants.kMaxUnitsLimit) {
-            mTurretSetpoint -= SuperstructureConstants.kTurretDOF;
-            Limelight.getInstance().setLed(Limelight.LedMode.OFF);
-            mDisableLimelight = true;
-        } else {
-            mDisableLimelight = false;
-            Limelight.getInstance().setLed(Limelight.LedMode.ON);
-        }
-
         if (mHoodSetpoint < Constants.kHoodConstants.kMinUnitsLimit) {
             // logic for when hood fully in
             mHoodSetpoint = Constants.kHoodConstants.kMinUnitsLimit;
@@ -326,10 +313,6 @@ public class Superstructure extends Subsystem {
                 mHoodSetpoint = aiming_setpoint;
             }
 
-            final Rotation2d turret_error = mRobotState.getVehicleToTurret(timestamp).getRotation().inverse()
-                    .rotateBy(mLatestAimingParameters.get().getTurretToGoalRotation());
-            
-            mTurretSetpoint = mCurrentTurret + turret_error.getDegrees();
             final Twist2d velocity = mRobotState.getMeasuredVelocity();
             // Angular velocity component from tangential robot motion about the goal.
             final double tangential_component = mLatestAimingParameters.get().getTurretToGoalRotation().sin()
@@ -344,7 +327,7 @@ public class Superstructure extends Subsystem {
             mHasTarget = true;
             final double hood_error = mCurrentHood - mHoodSetpoint;
 
-            if (Util.epsilonEquals(turret_error.getDegrees(), 0.0, 3.0) && Util.epsilonEquals(hood_error, 0.0, 3.0)) {
+            if (Util.epsilonEquals(0, 0.0, 3.0) && Util.epsilonEquals(hood_error, 0.0, 3.0)) {
                 mOnTarget = true;
             } else {
                 mOnTarget = false;
@@ -369,10 +352,6 @@ public class Superstructure extends Subsystem {
             return;
         }
         final double kLookaheadTime = 4.0;
-        Rotation2d turret_error = mRobotState.getPredictedFieldToVehicle(kLookaheadTime)
-                .transformBy(mRobotState.getVehicleToTurret(timestamp)).getRotation().inverse()
-                .rotateBy(mFieldRelativeTurretGoal);
-        mTurretSetpoint = mCurrentTurret + turret_error.getDegrees();
         safetyReset();
     }
 
@@ -400,24 +379,19 @@ public class Superstructure extends Subsystem {
             mHood.setSetpointMotionMagic(mHoodSetpoint);
         }
 
-        Magazine.WantedAction indexerAction = Magazine.WantedAction.PASSIVE_INDEX;
+        Magazine.WantedAction indexerAction = Magazine.WantedAction.NONE;
         double real_trigger = 0.0;
         double real_shooter = 0.0;
         boolean real_popout = false;
 
         if (Intake.getInstance().getState() == Intake.State.INTAKING) {
-            indexerAction = Magazine.WantedAction.PASSIVE_INDEX;
-            real_trigger = -600.0;
-        }
-
-        if (GearIntake.getInstance().getState() == GearIntake.State.INTAKING) {
-            indexerAction = Magazine.WantedAction.PASSIVE_INDEX;
+            indexerAction = Magazine.WantedAction.ZOOM;
             real_trigger = -600.0;
         }
 
         if (mWantsSpinUp) {
             real_shooter = mShooterSetpoint;
-            indexerAction = Magazine.WantedAction.PASSIVE_INDEX;
+            indexerAction = Magazine.WantedAction.ZOOM;
             real_trigger = -600.0;
         } else if (mWantsPreShot) {
             real_shooter = mShooterSetpoint;
@@ -429,7 +403,7 @@ public class Superstructure extends Subsystem {
 
             if (mLatestAimingParameters.isPresent()) {
                 if (mLatestAimingParameters.get().getRange() > 240.) {
-                    indexerAction = Magazine.WantedAction.SLOW_ZOOM;
+                    indexerAction = Magazine.WantedAction.ZOOM;
                 } else {
                     indexerAction = Magazine.WantedAction.ZOOM;
                 }
@@ -449,7 +423,7 @@ public class Superstructure extends Subsystem {
 
         
         if (mWantsUnjam) {
-            indexerAction = Magazine.WantedAction.PREP;
+            indexerAction = Magazine.WantedAction.UNZOOM;
             real_popout = true;
             real_trigger = -5000;
         }
@@ -457,7 +431,7 @@ public class Superstructure extends Subsystem {
         if (mEnableIndexer) {
             mMagazine.setState(indexerAction);
         } else {
-            mMagazine.setState(Magazine.WantedAction.PREP);
+            mMagazine.setState(Magazine.WantedAction.UNZOOM);
         }
 
         mTrigger.setPopoutSolenoid(real_popout);

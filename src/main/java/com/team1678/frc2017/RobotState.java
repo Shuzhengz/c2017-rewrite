@@ -30,7 +30,6 @@ public class RobotState {
     }
 
     private static final int kObservationBufferSize = 100;
-    private static final Pose2d kVehicleToTurretFixed = Pose2d.fromTranslation(Constants.kVehicleToTurretTranslation);
 
     /*
      * RobotState keeps track of the poses of various coordinate frames throughout
@@ -123,11 +122,6 @@ public class RobotState {
         return field_to_vehicle_.getInterpolated(new InterpolatingDouble(timestamp));
     }
 
-    public synchronized Pose2d getVehicleToTurret(double timestamp) {
-        return new Pose2d(Constants.kVehicleToTurretTranslation,
-                turret_rotation_.getInterpolated(new InterpolatingDouble(timestamp)));
-    }
-
     public synchronized Rotation2d getVehicleToHood(double timestamp) {
         return vehicle_to_hood_.getInterpolated(new InterpolatingDouble(timestamp));
     }
@@ -139,7 +133,7 @@ public class RobotState {
     }
 
     public synchronized Pose2d getFieldToTurret(double timestamp) {
-        return getFieldToVehicle(timestamp).transformBy(getVehicleToTurret(timestamp));
+        return getFieldToVehicle(timestamp);
     }
 
     public synchronized Map.Entry<InterpolatingDouble, Pose2d> getLatestFieldToVehicle() {
@@ -322,8 +316,7 @@ public class RobotState {
         if (report == null) {
             return Optional.empty();
         }
-        Pose2d latestTurretFixedToField = getPredictedFieldToVehicle(Constants.kAutoAimPredictionTime)
-                .transformBy(kVehicleToTurretFixed).inverse();
+        Pose2d latestTurretFixedToField = getPredictedFieldToVehicle(Constants.kAutoAimPredictionTime).inverse();
         Pose2d latestTurretFixedToGoal = latestTurretFixedToField.transformBy(report.field_to_target);
 
         Pose2d vehicleToGoal = getFieldToVehicle(timestamp).inverse().transformBy(report.field_to_target)

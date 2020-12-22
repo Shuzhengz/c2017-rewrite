@@ -191,18 +191,6 @@ public class Trigger extends Subsystem {
         return mInstance;
     }
 
-    public static class PeriodicIO {
-        // INPUTS
-        public double trigger_velocity;
-        public double trigger_current;
-        public double trigger_voltage;
-        public double trigger_temperature;
-        
-        //OUTPUTS
-        public double trigger_demand;
-        public boolean popout_solenoid;
-    }
-
     @Override
     public synchronized void outputTelemetry() {
         SmartDashboard.putNumber("Trigger Velocity", mPeriodicIO.trigger_velocity);
@@ -217,5 +205,17 @@ public class Trigger extends Subsystem {
             mCSVWriter.write();
             System.out.println("LOGGING trigger");
         }
+    }
+
+    public static class PeriodicIO {
+        // INPUTS
+        public double trigger_velocity;
+        public double trigger_current;
+        public double trigger_voltage;
+        public double trigger_temperature;
+
+        //OUTPUTS
+        public double trigger_demand;
+        public boolean popout_solenoid;
     }
 }
