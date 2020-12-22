@@ -22,9 +22,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ff4a333e-cd70-4132-9132-734ad29d7691" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/superstructure/indexer/Indexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/superstructure/indexer/Indexer.java" afterDir="false" />
-    </list>
+    <list default="true" id="ff4a333e-cd70-4132-9132-734ad29d7691" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -229,7 +227,7 @@
       <workItem from="1608501927776" duration="1405000" />
       <workItem from="1608518948601" duration="1306000" />
       <workItem from="1608520727779" duration="61000" />
-      <workItem from="1608598567821" duration="5803000" />
+      <workItem from="1608598567821" duration="5977000" />
     </task>
     <servers />
   </component>
