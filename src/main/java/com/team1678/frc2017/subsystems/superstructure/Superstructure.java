@@ -67,10 +67,11 @@ public class Superstructure extends Subsystem {
     private boolean mWantsUnjam = false;
     private boolean mWantsHoodScan = false;
 
-    private double mCurrentTurret = 0.0;
     private double mCurrentHood = 0.0;
+    private double mUpperConveyorVoltage = 6.0;
+    private double mSideConveyorVoltage = 7.0;
+    private double mLowerConveyorVoltage = 8.0;
 
-    private double mTurretSetpoint = 0.0;
     private double mHoodSetpoint = 70.5;
     private double mShooterSetpoint = 4000.0;
     private boolean mGotSpunUp = false;
@@ -156,7 +157,6 @@ public class Superstructure extends Subsystem {
 
         SmartDashboard.putNumber("Angle Add", -mAngleAdd);
 
-        SmartDashboard.putNumber("Turret Goal", mTurretSetpoint);
         SmartDashboard.putNumber("Hood Goal", mHoodSetpoint);
     }
 
@@ -197,17 +197,6 @@ public class Superstructure extends Subsystem {
         return mCorrectedRangeToTarget;
     }
 
-    public synchronized TurretControlModes getTurretControlMode() {
-        return mTurretMode;
-    }
-
-    // Jog Turret
-    public synchronized void jogTurret(double delta) {
-        mTurretMode = TurretControlModes.JOGGING;
-        mTurretSetpoint += delta;
-        mTurretFeedforwardV = 0.0;
-    }
-
     // Jog Hood
     public synchronized void setWantHoodScan(boolean scan) {
         if (scan != mWantsHoodScan) {
@@ -236,7 +225,6 @@ public class Superstructure extends Subsystem {
         if ((mTurretMode == TurretControlModes.VISION_AIMED && mHasTarget)) {
             // Keep current setpoints
         } else {
-            mTurretSetpoint = turret;
             mHoodSetpoint = hood;
             mShooterSetpoint = shooter;
         }
@@ -372,7 +360,6 @@ public class Superstructure extends Subsystem {
             mHood.setSetpointPositionPID(Constants.kHoodConstants.kMinUnitsLimit, 0);
         } else if (mWantsFendor) {
             mHood.setSetpointMotionMagic(39.5);
-            mTurretSetpoint = 180.0;
         } else if (mWantsTestSpit) {
             mHood.setSetpointMotionMagic(Constants.kHoodConstants.kMinUnitsLimit);
         } else {

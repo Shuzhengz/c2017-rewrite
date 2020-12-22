@@ -59,7 +59,7 @@ public class Magazine extends Subsystem {
     }
 
     public enum LowerState {
-        LOWER_IDLE, LOWER_FORWARD, LOWER_BACKWARD,
+        LOWER_IDLE, LOWER_FORWARD, LOWER_ZOOM, LOWER_BACKWARD,
     }
 
     private boolean mGeneratedGoal = false;
@@ -69,6 +69,9 @@ public class Magazine extends Subsystem {
     private final TalonFX mMaster;
     private final Solenoid mPopoutSolenoid;
     private State mState = State.IDLE;
+    private UpperState mUpperState = UpperState.UPPER_IDLE;
+    private SideState mSideState = SideState.SIDE_IDLE;
+    private LowerState mLowerState = LowerState.LOWER_IDLE;
     private double mInitialTime = 0;
     private boolean mStartCounting = false;
     private double mWaitTime = .1; // seconds
@@ -204,24 +207,40 @@ public class Magazine extends Subsystem {
         switch (mState) {
         case IDLE:
             mPeriodicIO.indexer_control_mode = ControlMode.Velocity;
-            mPeriodicIO.conveyor_demand = 0;
+            mUpperState = UpperState.UPPER_IDLE;
+            mSideState = SideState.SIDE_IDLE;
+            mLowerState = LowerState.LOWER_IDLE;
             break;
         case FEEDING:
+            mPeriodicIO.indexer_control_mode = ControlMode.Velocity;
+            mUpperState = UpperState.UPPER_FORWARD;
+            mSideState = SideState.SIDE_IDLE;
+            mLowerState = LowerState.LOWER_FORWARD;
             break;
         case ZOOMING:
             mPeriodicIO.indexer_control_mode = ControlMode.Velocity;
-            mPeriodicIO.conveyor_demand = mBackwards ? -kZoomingVelocity : kZoomingVelocity;
+            mUpperState = UpperState.UPPER_IDLE;
+            mSideState = SideState.SIDE_IDLE;
+            mLowerState = LowerState.LOWER_FORWARD;
             break;
         case HELLA_ZOOMING:
             mPeriodicIO.indexer_control_mode = ControlMode.Velocity;
-            mPeriodicIO.conveyor_demand = (mBackwards ? -kZoomingVelocity : kZoomingVelocity) * 1.5;
+            upper_voltage = 12;
+            side_voltage = 12;
+            lower_voltage = 12;
+            break;
+        case UNZOOMING:
+            mPeriodicIO.indexer_control_mode = ControlMode.Velocity;
+            mUpperState = UpperState.UPPER_BACKWARD;
+            mSideState = SideState.SIDE_AGITATE;
+            mLowerState = LowerState.LOWER_BACKWARD;
             break;
         default:
             System.out.println("Fell through on Indexer states!");
         }
     }
 
-    public double getIndexerVelocity() {
+    public double getMagazineVelocity() {
         if (mPeriodicIO.indexer_control_mode == ControlMode.Velocity) {
             return mPeriodicIO.conveyor_demand;
         } else {
@@ -259,24 +278,15 @@ public class Magazine extends Subsystem {
     public void setState(UpperState upper_state) {
         final State prev_state = mState;
         switch (upper_state) {
-        case UPPER_IDLE:
-            upper_voltage = 0;
-            mState = State.IDLE;
-            break;
-        case UPPER_FORWARD:
-            upper_voltage = 12;
-            mState = State.ZOOMING;
-            break;
-        case UPPER_BACKWARD:
-            upper_voltage = -4;
-            mState = State.ZOOMING;
-            break;
-        }
-
-        if (mState != prev_state && (mState == State.ZOOMING || mState == State.HELLA_ZOOMING)) {
-            mMaster.configClosedloopRamp(0.2, 0);
-        } else if (mState != prev_state) {
-            mMaster.configClosedloopRamp(0.0, 0);
+            case UPPER_IDLE:
+                upper_voltage = 0;
+                break;
+            case UPPER_FORWARD:
+                upper_voltage = 12;
+                break;
+            case UPPER_BACKWARD:
+                upper_voltage = -4;
+                break;
         }
     }
 
@@ -284,23 +294,14 @@ public class Magazine extends Subsystem {
         final State prev_state = mState;
         switch (side_state) {
             case SIDE_IDLE:
-                upper_voltage = 0;
-                mState = State.IDLE;
+                side_voltage = 0;
                 break;
             case SIDE_AGITATE:
-                upper_voltage = 6;
-                mState = State.ZOOMING;
+                side_voltage = 6;
                 break;
             case SIDE_PULL_IN:
-                upper_voltage = -6;
-                mState = State.ZOOMING;
+                side_voltage = -6;
                 break;
-        }
-
-        if (mState != prev_state && (mState == State.ZOOMING || mState == State.HELLA_ZOOMING)) {
-            mMaster.configClosedloopRamp(0.2, 0);
-        } else if (mState != prev_state) {
-            mMaster.configClosedloopRamp(0.0, 0);
         }
     }
 
@@ -308,23 +309,14 @@ public class Magazine extends Subsystem {
         final State prev_state = mState;
         switch (lower_state) {
             case LOWER_IDLE:
-                upper_voltage = 0;
-                mState = State.IDLE;
+                lower_voltage = 0;
                 break;
             case LOWER_FORWARD:
-                upper_voltage = 12;
-                mState = State.ZOOMING;
+                lower_voltage = 12;
                 break;
             case LOWER_BACKWARD:
-                upper_voltage = -12;
-                mState = State.ZOOMING;
+                lower_voltage = -12;
                 break;
-        }
-
-        if (mState != prev_state && (mState == State.ZOOMING || mState == State.HELLA_ZOOMING)) {
-            mMaster.configClosedloopRamp(0.2, 0);
-        } else if (mState != prev_state) {
-            mMaster.configClosedloopRamp(0.0, 0);
         }
     }
 
@@ -336,6 +328,9 @@ public class Magazine extends Subsystem {
         mPeriodicIO.indexer_current = mMaster.getStatorCurrent();
         mPeriodicIO.side_mag_extended = side_magazine_extended;
         mPeriodicIO.front_mag_extended = front_magazine_extended;
+        mPeriodicIO.conveyor_demand = lower_voltage;
+        mPeriodicIO.upper_conveyor_demand = upper_voltage;
+        mPeriodicIO.side_conveyor_demand = side_voltage;
 
         if (atHomingLocation() && !mHasBeenZeroed) {
             mMaster.setSelectedSensorPosition((int) Math.floor(mOffset * kAngleConversion));
@@ -380,5 +375,7 @@ public class Magazine extends Subsystem {
         // OUTPUTS
         public ControlMode indexer_control_mode = ControlMode.PercentOutput;
         public double conveyor_demand;
+        public double side_conveyor_demand;
+        public double upper_conveyor_demand;
     }
 }

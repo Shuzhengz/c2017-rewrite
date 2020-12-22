@@ -82,10 +82,13 @@ public class Constants {
 
     public static final double kVelocityConversion = 600.0 / 2048.0;
 
-    // Indexer
+    // Indexer/Magazine
     public static final int kIndexerLimitSwitch = 6;
 
     public static final int kIndexerPopoutSolenoidID = 2;
+    public static final int kUpperConveyorMotor = 5;
+    public static final int kSideConveyorMotor = 4;
+    public static final int kLowerConveyorMotor = 3;
 
     public static final double kIndexerKp = 0.2;
     public static final double kIndexerKi = 0.;
