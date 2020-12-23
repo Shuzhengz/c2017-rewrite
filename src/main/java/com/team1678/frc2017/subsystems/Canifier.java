@@ -34,10 +34,6 @@ public class Canifier extends Subsystem {
         return mPeriodicInputs.indexer_limit_;
     }
 
-    public synchronized boolean getTurretLimit() {
-        return mPeriodicInputs.turret_limit_;
-    }
-
     public synchronized boolean getHoodLimit() {
         return mPeriodicInputs.hood_limit_;
     }
@@ -76,7 +72,6 @@ public class Canifier extends Subsystem {
         mCanifier.getGeneralInputs(pins);
 
         mPeriodicInputs.indexer_limit_ = !pins.SDA;
-        mPeriodicInputs.turret_limit_ = !pins.LIMR;
         mPeriodicInputs.hood_limit_ = !pins.SPI_MOSI_PWM1;
 
         mPeriodicInputs.front_proxy_ = pins.SPI_CLK_PWM0; // change these pins
@@ -112,7 +107,6 @@ public class Canifier extends Subsystem {
 
     private static class PeriodicInputs {
         public boolean indexer_limit_;
-        public boolean turret_limit_;
         public boolean hood_limit_;
         public boolean front_proxy_;
         public boolean right_proxy_;

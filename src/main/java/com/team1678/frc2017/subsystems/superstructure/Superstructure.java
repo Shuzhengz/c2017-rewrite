@@ -42,10 +42,6 @@ public class Superstructure extends Subsystem {
 
     private Rotation2d mFieldRelativeTurretGoal = null;
 
-    enum TurretControlModes {
-        FIELD_RELATIVE, VISION_AIMED, OPEN_LOOP, JOGGING
-    }
-
     private boolean mHasTarget = false;
     private boolean mOnTarget = false;
     private int mTrackId = -1;
@@ -85,8 +81,6 @@ public class Superstructure extends Subsystem {
         mEnableIndexer = indexer;
     }
 
-    private TurretControlModes mTurretMode = TurretControlModes.FIELD_RELATIVE;
-
     private double mTurretThrottle = 0.0;
     private TimeDelayedBoolean trigger_popout = new TimeDelayedBoolean();
     private boolean estim_popout = false;
@@ -116,7 +110,6 @@ public class Superstructure extends Subsystem {
             @Override
             public void onStart(double timestamp) {
                 synchronized (Superstructure.this) {
-                    mTurretMode = TurretControlModes.FIELD_RELATIVE;
                     if (SuperstructureConstants.kUseSmartdashboard) {
                         SmartDashboard.putNumber("Shooting RPM", mShooterSetpoint);
                         SmartDashboard.putNumber("Hood Angle", mHoodSetpoint);
@@ -221,8 +214,8 @@ public class Superstructure extends Subsystem {
         mAngleAdd -= add;
     }
 
-    public synchronized void setGoal(double shooter, double hood, double turret) {
-        if ((mTurretMode == TurretControlModes.VISION_AIMED && mHasTarget)) {
+    public synchronized void setGoal(double shooter, double hood) {
+        if (mHasTarget) {
             // Keep current setpoints
         } else {
             mHoodSetpoint = hood;
@@ -266,11 +259,6 @@ public class Superstructure extends Subsystem {
     }
 
     public synchronized void maybeUpdateGoalFromVision(double timestamp) {
-
-        if (mTurretMode != TurretControlModes.VISION_AIMED) {
-            resetAimingParameters();
-            return;
-        }
 
         if (mWantsShoot && mGotSpunUp) {
             mLatestAimingParameters = mRobotState.getAimingParameters(mUseInnerTarget, mTrackId, Constants.kMaxGoalTrackAge);
@@ -328,11 +316,7 @@ public class Superstructure extends Subsystem {
     }
 
     public synchronized void maybeUpdateGoalFromFieldRelativeGoal(double timestamp) {
-        if (mTurretMode != TurretControlModes.FIELD_RELATIVE && mTurretMode != TurretControlModes.VISION_AIMED) {
-            mFieldRelativeTurretGoal = null;
-            return;
-        }
-        if (mTurretMode == TurretControlModes.VISION_AIMED && !mLatestAimingParameters.isEmpty()) {
+        if (!mLatestAimingParameters.isEmpty()) {
             // Vision will control the turret.
             return;
         }
@@ -341,12 +325,6 @@ public class Superstructure extends Subsystem {
         }
         final double kLookaheadTime = 4.0;
         safetyReset();
-    }
-
-    // god mode on the turret
-    public synchronized void setTurretOpenLoop(double throttle) {
-        mTurretMode = TurretControlModes.OPEN_LOOP;
-        mTurretThrottle = throttle;
     }
 
     public synchronized void followSetpoint() {
@@ -471,7 +449,6 @@ public class Superstructure extends Subsystem {
 
     public synchronized void setWantAutoAim(Rotation2d field_to_turret_hint, boolean enforce_min_distance,
             double min_distance) {
-        mTurretMode = TurretControlModes.VISION_AIMED;
         mFieldRelativeTurretGoal = field_to_turret_hint;
         mEnforceAutoAimMinDistance = enforce_min_distance;
         mAutoAimMinDistance = min_distance;
@@ -552,10 +529,5 @@ public class Superstructure extends Subsystem {
 
     public synchronized void setAutoIndex(boolean auto_index) {
         mAutoIndex = auto_index;
-    }
-
-    public synchronized void setWantFieldRelativeTurret(Rotation2d field_to_turret) {
-        mTurretMode = TurretControlModes.FIELD_RELATIVE;
-        mFieldRelativeTurretGoal = field_to_turret;
     }
 }

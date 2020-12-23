@@ -2,7 +2,6 @@ package com.team1678.frc2017.controlboard;
 
 import com.team1678.frc2017.Constants;
 import com.team1678.frc2017.controlboard.GamepadButtonControlBoard;
-import com.team1678.frc2017.controlboard.GamepadButtonControlBoard.TurretCardinal;
 import com.team254.lib.geometry.Rotation2d;
 import com.team1678.frc2017.controlboard.CustomXboxController.Side;
 
@@ -184,10 +183,6 @@ public class ControlBoard {
         return mButtonControlBoard.climbMode();
         //return mController.getButton(XboxController.Button.LB) && mController.getButton(XboxController.Button.RB)  && 
         //mController.getTrigger(XboxController.Side.LEFT) &&  mController.getTrigger(XboxController.Side.RIGHT);
-    }
-
-    public TurretCardinal getTurretCardinal() {
-        return mButtonControlBoard.getTurretCardinal();
     }
 
     public boolean getLeaveClimbMode() {

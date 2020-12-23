@@ -71,7 +71,6 @@ public class RobotState {
 
     // FPGATimestamp -> Pose2d or Rotation2d
     private InterpolatingTreeMap<InterpolatingDouble, Pose2d> field_to_vehicle_;
-    private InterpolatingTreeMap<InterpolatingDouble, Rotation2d> turret_rotation_;
     private InterpolatingTreeMap<InterpolatingDouble, Rotation2d> vehicle_to_hood_;
     private Twist2d vehicle_velocity_predicted_;
     private Twist2d vehicle_velocity_measured_;
@@ -93,9 +92,6 @@ public class RobotState {
     public synchronized void reset(double start_time, Pose2d initial_field_to_vehicle,
             Rotation2d initial_vehicle_to_turret, Rotation2d initial_vehicle_to_hood) {
         reset(start_time, initial_field_to_vehicle);
-
-        turret_rotation_ = new InterpolatingTreeMap<>(kObservationBufferSize);
-        turret_rotation_.put(new InterpolatingDouble(start_time), initial_vehicle_to_turret);
 
         vehicle_to_hood_ = new InterpolatingTreeMap<>(kObservationBufferSize);
         vehicle_to_hood_.put(new InterpolatingDouble(start_time), initial_vehicle_to_hood);
@@ -140,10 +136,6 @@ public class RobotState {
         return field_to_vehicle_.lastEntry();
     }
 
-    public synchronized Map.Entry<InterpolatingDouble, Rotation2d> getLatestVehicleToTurret() {
-        return turret_rotation_.lastEntry();
-    }
-
     public synchronized Pose2d getPredictedFieldToVehicle(double lookahead_time) {
         return getLatestFieldToVehicle().getValue()
                 .transformBy(Pose2d.exp(vehicle_velocity_predicted_.scaled(lookahead_time)));
@@ -152,11 +144,7 @@ public class RobotState {
     public synchronized void addFieldToVehicleObservation(double timestamp, Pose2d observation) {
         field_to_vehicle_.put(new InterpolatingDouble(timestamp), observation);
     }
-
-    public synchronized void addVehicleToTurretObservation(double timestamp, Rotation2d observation) {
-        turret_rotation_.put(new InterpolatingDouble(timestamp), observation);
-    }
-
+    
     public synchronized void addVehicleToHoodObservation(double timestamp, Rotation2d observation) {
         vehicle_to_hood_.put(new InterpolatingDouble(timestamp), observation);
     }

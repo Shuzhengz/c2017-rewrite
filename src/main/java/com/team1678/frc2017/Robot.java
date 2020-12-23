@@ -224,7 +224,7 @@ public class Robot<Turret> extends TimedRobot {
         mPivoted = false;
       }
 
-      if (!climb_mode){ //TODO: turret preset stuff and jog turret and rumbles
+      if (!climb_mode){
         mSuperstructure.enableIndexer(true);
         mSuperstructure.setWantUnjam(mControlBoard.getWantUnjam());
 
@@ -238,10 +238,7 @@ public class Robot<Turret> extends TimedRobot {
 
         mSuperstructure.setWantHoodScan(mControlBoard.getWantHoodScan());
 
-        if (turret_jog != null) {
-          mSuperstructure.setWantFieldRelativeTurret(
-                  turret_jog.rotateBy(Rotation2d.fromDegrees(90.0)));
-        } else if (mControlBoard.getFendorShot()) {
+        if (mControlBoard.getFendorShot()) {
           mSuperstructure.setWantFendor();
           //mSuperstructure.setWantFieldRelativeTurret(Rotation2d.fromDegrees(180.));
         } else {
