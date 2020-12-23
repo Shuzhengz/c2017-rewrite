@@ -20,7 +20,7 @@ import com.team1678.frc2017.subsystems.superstructure.shooter.Shooter;
 import com.team1678.frc2017.subsystems.superstructure.trigger.Trigger;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.wpilib.TimedRobot;
+import com.team1678.lib.wpilib.TimedRobot;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1678.frc2017.subsystems.*;
 import com.team254.lib.util.*;

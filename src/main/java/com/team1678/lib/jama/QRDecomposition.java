@@ -1,5 +1,5 @@
-package com.team1678.lib.Jama;
-import com.team1678.lib.Jama.util.*;
+package com.team1678.lib.jama;
+import com.team1678.lib.jama.util.*;
 
 /** QR Decomposition.
 <P>

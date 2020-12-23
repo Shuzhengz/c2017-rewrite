@@ -1,4 +1,4 @@
-package com.team1678.lib.Jama;
+package com.team1678.lib.jama;
 
    /** LU Decomposition.
    <P>

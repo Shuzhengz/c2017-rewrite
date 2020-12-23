@@ -1,4 +1,4 @@
-package com.team254.lib.wpilib;
+package com.team1678.lib.wpilib;
 
 /*----------------------------------------------------------------------------*/
 /* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
