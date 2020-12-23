@@ -9,7 +9,7 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 
 import com.team1678.frc2017.subsystems.Subsystem;
-import com.team1678.frc2017.subsystems.superstructure.indexer.Magazine;
+import com.team1678.frc2017.subsystems.superstructure.magazine.Magazine;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

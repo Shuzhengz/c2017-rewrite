@@ -52,7 +52,7 @@ public class Climber extends Subsystem {
     private ReflectingCSVWriter<PeriodicIO> mCSVWriter = null;
 
     private Climber() {
-        mMaster = TalonFXFactory.createDefaultTalon(Constants.kWinchMasterId);
+        mMaster = TalonFXFactory.createDefaultTalon(Constants.kMasterFlywheelID);
         mMaster.set(ControlMode.PercentOutput, 0);
         mMaster.setInverted(true);
         mMaster.configVoltageCompSaturation(12.0, Constants.kLongCANTimeoutMs);
@@ -67,7 +67,7 @@ public class Climber extends Subsystem {
         mMaster.config_kD(0, 0);
         mMaster.config_kF(0, 0.05);
 
-        mSlave = TalonFXFactory.createPermanentSlaveTalon(Constants.kWinchSlaveId, Constants.kWinchMasterId);
+        mSlave = TalonFXFactory.createPermanentSlaveTalon(Constants.kSlaveFlywheelID, Constants.kSlaveFlywheelID);
         mSlave.setInverted(false);
         mSlave.follow(mMaster);
 

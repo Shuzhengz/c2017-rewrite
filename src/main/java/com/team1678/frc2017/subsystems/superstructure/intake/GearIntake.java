@@ -1,4 +1,4 @@
-package com.team1678.frc2017.subsystems.superstructure.gearIntake;
+package com.team1678.frc2017.subsystems.superstructure.intake;
 
 import com.team1678.frc2017.Constants;
 import com.team1678.frc2017.loops.ILooper;
@@ -11,8 +11,6 @@ import com.team254.lib.util.TimeDelayedBoolean;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

@@ -57,8 +57,6 @@ public class Constants {
     public static final double kDriveVoltageRampRate = 0.0;
 
     // climber
-    public static final int kWinchMasterId = 11;
-    public static final int kWinchSlaveId = 12;
 
     //GearIntake
     public static final int kGearIntakeRollerId = 15;
@@ -72,6 +70,7 @@ public class Constants {
     public static final int kLeftDriveSlaveId = 2;
 
     public static final int kIndexerId = 5;
+    public static final int kIndexerSlaveId = 6;
 
     // Intake
     public static final int kIntakeRollerId = 15;
@@ -85,7 +84,7 @@ public class Constants {
     // Indexer/Magazine
     public static final int kIndexerLimitSwitch = 6;
 
-    public static final int kIndexerPopoutSolenoidID = 2;
+    public static final int kIndexerSolenoidID = 2;
     public static final int kUpperConveyorMotor = 5;
     public static final int kSideConveyorMotor = 4;
     public static final int kLowerConveyorMotor = 3;
