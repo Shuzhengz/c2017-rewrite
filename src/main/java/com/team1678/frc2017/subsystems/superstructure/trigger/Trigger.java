@@ -9,7 +9,7 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 
 import com.team1678.frc2017.subsystems.Subsystem;
-import com.team1678.frc2017.subsystems.superstructure.indexer.Indexer;
+import com.team1678.frc2017.subsystems.superstructure.magazine.Magazine;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,7 +26,7 @@ public class Trigger extends Subsystem {
     private final TalonFX mTrigger;
     private final Solenoid mPopoutSolenoid;
 
-    private final Indexer mIndexer = Indexer.getInstance();
+    private final Magazine mMagazine = Magazine.getInstance();
 
     private boolean mCurrentLimitTriggered = false;
     private double mCurrentLimitTimer = 0.0;
@@ -191,18 +191,6 @@ public class Trigger extends Subsystem {
         return mInstance;
     }
 
-    public static class PeriodicIO {
-        // INPUTS
-        public double trigger_velocity;
-        public double trigger_current;
-        public double trigger_voltage;
-        public double trigger_temperature;
-        
-        //OUTPUTS
-        public double trigger_demand;
-        public boolean popout_solenoid;
-    }
-
     @Override
     public synchronized void outputTelemetry() {
         SmartDashboard.putNumber("Trigger Velocity", mPeriodicIO.trigger_velocity);
@@ -217,5 +205,17 @@ public class Trigger extends Subsystem {
             mCSVWriter.write();
             System.out.println("LOGGING trigger");
         }
+    }
+
+    public static class PeriodicIO {
+        // INPUTS
+        public double trigger_velocity;
+        public double trigger_current;
+        public double trigger_voltage;
+        public double trigger_temperature;
+
+        //OUTPUTS
+        public double trigger_demand;
+        public boolean popout_solenoid;
     }
 }

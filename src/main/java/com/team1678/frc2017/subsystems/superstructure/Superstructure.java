@@ -8,9 +8,9 @@ import com.team1678.frc2017.loops.ILooper;
 import com.team1678.frc2017.loops.Loop;
 import com.team1678.frc2017.states.SuperstructureConstants;
 import com.team1678.frc2017.subsystems.*;
-import com.team1678.frc2017.subsystems.superstructure.indexer.Indexer;
+import com.team1678.frc2017.subsystems.superstructure.magazine.Magazine;
 import com.team1678.frc2017.subsystems.superstructure.intake.Intake;
-import com.team1678.frc2017.subsystems.superstructure.gearIntake.GearIntake;
+import com.team1678.frc2017.subsystems.superstructure.intake.GearIntake;
 import com.team1678.frc2017.subsystems.superstructure.shooter.Hood;
 import com.team1678.frc2017.subsystems.superstructure.shooter.Shooter;
 import com.team1678.frc2017.subsystems.superstructure.trigger.Trigger;
@@ -36,7 +36,7 @@ public class Superstructure extends Subsystem {
     private final Hood mHood = Hood.getInstance();
     private final Intake mIntake = Intake.getInstance();
     private final GearIntake mGearIntake = GearIntake.getInstance();
-    private final Indexer mIndexer = Indexer.getInstance();
+    private final Magazine mMagazine = Magazine.getInstance();
     private final RobotState mRobotState = RobotState.getInstance();
     private boolean mAutoIndex = false;
 
@@ -67,10 +67,11 @@ public class Superstructure extends Subsystem {
     private boolean mWantsUnjam = false;
     private boolean mWantsHoodScan = false;
 
-    private double mCurrentTurret = 0.0;
     private double mCurrentHood = 0.0;
+    private double mUpperConveyorVoltage = 6.0;
+    private double mSideConveyorVoltage = 7.0;
+    private double mLowerConveyorVoltage = 8.0;
 
-    private double mTurretSetpoint = 0.0;
     private double mHoodSetpoint = 70.5;
     private double mShooterSetpoint = 4000.0;
     private boolean mGotSpunUp = false;
@@ -156,7 +157,6 @@ public class Superstructure extends Subsystem {
 
         SmartDashboard.putNumber("Angle Add", -mAngleAdd);
 
-        SmartDashboard.putNumber("Turret Goal", mTurretSetpoint);
         SmartDashboard.putNumber("Hood Goal", mHoodSetpoint);
     }
 
@@ -197,17 +197,6 @@ public class Superstructure extends Subsystem {
         return mCorrectedRangeToTarget;
     }
 
-    public synchronized TurretControlModes getTurretControlMode() {
-        return mTurretMode;
-    }
-
-    // Jog Turret
-    public synchronized void jogTurret(double delta) {
-        mTurretMode = TurretControlModes.JOGGING;
-        mTurretSetpoint += delta;
-        mTurretFeedforwardV = 0.0;
-    }
-
     // Jog Hood
     public synchronized void setWantHoodScan(boolean scan) {
         if (scan != mWantsHoodScan) {
@@ -236,7 +225,6 @@ public class Superstructure extends Subsystem {
         if ((mTurretMode == TurretControlModes.VISION_AIMED && mHasTarget)) {
             // Keep current setpoints
         } else {
-            mTurretSetpoint = turret;
             mHoodSetpoint = hood;
             mShooterSetpoint = shooter;
         }
@@ -255,19 +243,6 @@ public class Superstructure extends Subsystem {
     }
 
     public void safetyReset() {
-        if (mTurretSetpoint < Constants.kTurretConstants.kMinUnitsLimit) {
-            mTurretSetpoint += SuperstructureConstants.kTurretDOF;
-            Limelight.getInstance().setLed(Limelight.LedMode.OFF);
-            mDisableLimelight = true;
-        } else if (mTurretSetpoint > Constants.kTurretConstants.kMaxUnitsLimit) {
-            mTurretSetpoint -= SuperstructureConstants.kTurretDOF;
-            Limelight.getInstance().setLed(Limelight.LedMode.OFF);
-            mDisableLimelight = true;
-        } else {
-            mDisableLimelight = false;
-            Limelight.getInstance().setLed(Limelight.LedMode.ON);
-        }
-
         if (mHoodSetpoint < Constants.kHoodConstants.kMinUnitsLimit) {
             // logic for when hood fully in
             mHoodSetpoint = Constants.kHoodConstants.kMinUnitsLimit;
@@ -326,10 +301,6 @@ public class Superstructure extends Subsystem {
                 mHoodSetpoint = aiming_setpoint;
             }
 
-            final Rotation2d turret_error = mRobotState.getVehicleToTurret(timestamp).getRotation().inverse()
-                    .rotateBy(mLatestAimingParameters.get().getTurretToGoalRotation());
-            
-            mTurretSetpoint = mCurrentTurret + turret_error.getDegrees();
             final Twist2d velocity = mRobotState.getMeasuredVelocity();
             // Angular velocity component from tangential robot motion about the goal.
             final double tangential_component = mLatestAimingParameters.get().getTurretToGoalRotation().sin()
@@ -344,7 +315,7 @@ public class Superstructure extends Subsystem {
             mHasTarget = true;
             final double hood_error = mCurrentHood - mHoodSetpoint;
 
-            if (Util.epsilonEquals(turret_error.getDegrees(), 0.0, 3.0) && Util.epsilonEquals(hood_error, 0.0, 3.0)) {
+            if (Util.epsilonEquals(0, 0.0, 3.0) && Util.epsilonEquals(hood_error, 0.0, 3.0)) {
                 mOnTarget = true;
             } else {
                 mOnTarget = false;
@@ -369,10 +340,6 @@ public class Superstructure extends Subsystem {
             return;
         }
         final double kLookaheadTime = 4.0;
-        Rotation2d turret_error = mRobotState.getPredictedFieldToVehicle(kLookaheadTime)
-                .transformBy(mRobotState.getVehicleToTurret(timestamp)).getRotation().inverse()
-                .rotateBy(mFieldRelativeTurretGoal);
-        mTurretSetpoint = mCurrentTurret + turret_error.getDegrees();
         safetyReset();
     }
 
@@ -393,35 +360,29 @@ public class Superstructure extends Subsystem {
             mHood.setSetpointPositionPID(Constants.kHoodConstants.kMinUnitsLimit, 0);
         } else if (mWantsFendor) {
             mHood.setSetpointMotionMagic(39.5);
-            mTurretSetpoint = 180.0;
         } else if (mWantsTestSpit) {
             mHood.setSetpointMotionMagic(Constants.kHoodConstants.kMinUnitsLimit);
         } else {
             mHood.setSetpointMotionMagic(mHoodSetpoint);
         }
 
-        Indexer.WantedAction indexerAction = Indexer.WantedAction.PASSIVE_INDEX;
+        Magazine.WantedAction indexerAction = Magazine.WantedAction.NONE;
         double real_trigger = 0.0;
         double real_shooter = 0.0;
         boolean real_popout = false;
 
         if (Intake.getInstance().getState() == Intake.State.INTAKING) {
-            indexerAction = Indexer.WantedAction.PASSIVE_INDEX;
-            real_trigger = -600.0;
-        }
-
-        if (GearIntake.getInstance().getState() == GearIntake.State.INTAKING) {
-            indexerAction = Indexer.WantedAction.PASSIVE_INDEX;
+            indexerAction = Magazine.WantedAction.ZOOM;
             real_trigger = -600.0;
         }
 
         if (mWantsSpinUp) {
             real_shooter = mShooterSetpoint;
-            indexerAction = Indexer.WantedAction.PASSIVE_INDEX;
+            indexerAction = Magazine.WantedAction.ZOOM;
             real_trigger = -600.0;
         } else if (mWantsPreShot) {
             real_shooter = mShooterSetpoint;
-            indexerAction = Indexer.WantedAction.HELLA_ZOOM;
+            indexerAction = Magazine.WantedAction.HELLA_ZOOM;
             real_trigger = Constants.kTriggerRPM;
             real_popout = false;
         } else if (mWantsShoot) {
@@ -429,12 +390,12 @@ public class Superstructure extends Subsystem {
 
             if (mLatestAimingParameters.isPresent()) {
                 if (mLatestAimingParameters.get().getRange() > 240.) {
-                    indexerAction = Indexer.WantedAction.SLOW_ZOOM;
+                    indexerAction = Magazine.WantedAction.ZOOM;
                 } else {
-                    indexerAction = Indexer.WantedAction.ZOOM;
+                    indexerAction = Magazine.WantedAction.ZOOM;
                 }
             } else {
-                indexerAction = Indexer.WantedAction.ZOOM;
+                indexerAction = Magazine.WantedAction.ZOOM;
             }
             real_trigger = Constants.kTriggerRPM;
 
@@ -449,15 +410,15 @@ public class Superstructure extends Subsystem {
 
         
         if (mWantsUnjam) {
-            indexerAction = Indexer.WantedAction.PREP;
+            indexerAction = Magazine.WantedAction.UNZOOM;
             real_popout = true;
             real_trigger = -5000;
         }
 
         if (mEnableIndexer) {
-            mIndexer.setState(indexerAction);
+            mMagazine.setState(indexerAction);
         } else {
-            mIndexer.setState(Indexer.WantedAction.PREP);
+            mMagazine.setState(Magazine.WantedAction.UNZOOM);
         }
 
         mTrigger.setPopoutSolenoid(real_popout);

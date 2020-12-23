@@ -57,16 +57,10 @@ public class Constants {
     public static final double kDriveVoltageRampRate = 0.0;
 
     // climber
-    public static final int kWinchMasterId = 11;
-    public static final int kWinchSlaveId = 12;
 
     //GearIntake
     public static final int kGearIntakeRollerId = 15;
     public static final int kDeploySolenoidId = 0;
-
-    // wrangler
-    public static final int kWranglerId = 13;
-    public static final int kWranglerSolenoidId = 3;
 
     // drive
     public static final int kRightDriveMasterId = 3;
@@ -76,6 +70,7 @@ public class Constants {
     public static final int kLeftDriveSlaveId = 2;
 
     public static final int kIndexerId = 5;
+    public static final int kIndexerSlaveId = 6;
 
     // Intake
     public static final int kIntakeRollerId = 15;
@@ -86,13 +81,13 @@ public class Constants {
 
     public static final double kVelocityConversion = 600.0 / 2048.0;
 
-    // Indexer
-    public static final int kSlot0Proxy = 1;
-    public static final int kSlot1Proxy = 2;
-    public static final int kSlot2Proxy = 3;
-    public static final int kSlot3Proxy = 4;
-    public static final int kSlot4Proxy = 5;
+    // Indexer/Magazine
     public static final int kIndexerLimitSwitch = 6;
+
+    public static final int kIndexerSolenoidID = 2;
+    public static final int kUpperConveyorMotor = 5;
+    public static final int kSideConveyorMotor = 4;
+    public static final int kLowerConveyorMotor = 3;
 
     public static final double kIndexerKp = 0.2;
     public static final double kIndexerKi = 0.;
@@ -110,52 +105,6 @@ public class Constants {
     public static final double kIndexerDeadband = 2.0; // degrees
 
     public static final double kTestEpsilon = 1e-6;
-
-    // turret
-    public static final ServoMotorSubsystemConstants kTurretConstants = new ServoMotorSubsystemConstants();
-    static {
-        kTurretConstants.kName = "Turret";
-
-        kTurretConstants.kMasterConstants.id = 7;
-        kTurretConstants.kMasterConstants.invert_motor = true;
-        kTurretConstants.kMasterConstants.invert_sensor_phase = false;
-
-        // Unit == Degrees
-        kTurretConstants.kHomePosition = 0.0; // CCW degrees from forward
-        kTurretConstants.kTicksPerUnitDistance = (2048.0 * 48.0) / 360.0;
-        kTurretConstants.kKp = 0.5;
-        kTurretConstants.kKi = 0;
-        kTurretConstants.kKd = 0.0;
-        kTurretConstants.kKf = 0.05;
-        kTurretConstants.kKa = 0.0;
-        kTurretConstants.kMaxIntegralAccumulator = 0;
-        kTurretConstants.kIZone = 0; // Ticks
-        kTurretConstants.kDeadband = 0; // Ticks
-
-        kTurretConstants.kPositionKp = 0.1;
-        kTurretConstants.kPositionKi = 0.0;
-        kTurretConstants.kPositionKd = 10.0;
-        kTurretConstants.kPositionKf = 0.0;
-        kTurretConstants.kPositionMaxIntegralAccumulator = 0;
-        kTurretConstants.kPositionIZone = 0; // Ticks
-        kTurretConstants.kPositionDeadband = 0; // Ticks
-
-        kTurretConstants.kMinUnitsLimit = -135.0;
-        kTurretConstants.kMaxUnitsLimit = 315.0;
-
-        kTurretConstants.kCruiseVelocity = 20000; // Ticks / 100ms
-        kTurretConstants.kAcceleration = 40000; // Ticks / 100ms / s
-        kTurretConstants.kRampRate = 0.0; // s
-        kTurretConstants.kContinuousCurrentLimit = 20; // amps
-        kTurretConstants.kPeakCurrentLimit = 40; // amps
-        kTurretConstants.kPeakCurrentDuration = 10; // milliseconds
-        kTurretConstants.kMaxVoltage = 12.0;
-
-        // kTurretConstants.kStatusFrame8UpdateRate = 50;
-        // kTurretConstants.kRecoverPositionOnReset = true;
-    }
-
-    public static final Translation2d kVehicleToTurretTranslation = new Translation2d(3.75, 0);
 
     // hood
     public static final ServoMotorSubsystemConstants kHoodConstants = new ServoMotorSubsystemConstants();

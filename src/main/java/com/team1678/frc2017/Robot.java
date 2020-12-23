@@ -7,17 +7,13 @@
 
 package com.team1678.frc2017;
 
-import java.util.Optional;
-
 import com.team1678.frc2017.controlboard.ControlBoard;
 import com.team1678.frc2017.loops.Looper;
 import com.team1678.frc2017.paths.TrajectoryGenerator;
-import com.team1678.frc2017.controlboard.ControlBoard;
-import com.team1678.frc2017.controlboard.GamepadButtonControlBoard;
 import com.team1678.frc2017.subsystems.superstructure.Superstructure;
 import com.team1678.frc2017.subsystems.superstructure.climber.Climber;
-import com.team1678.frc2017.subsystems.superstructure.gearIntake.GearIntake;
-import com.team1678.frc2017.subsystems.superstructure.indexer.Indexer;
+import com.team1678.frc2017.subsystems.superstructure.intake.GearIntake;
+import com.team1678.frc2017.subsystems.superstructure.magazine.Magazine;
 import com.team1678.frc2017.subsystems.superstructure.intake.Intake;
 import com.team1678.frc2017.subsystems.superstructure.shooter.Hood;
 import com.team1678.frc2017.subsystems.superstructure.shooter.Shooter;
@@ -26,17 +22,14 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.wpilib.TimedRobot;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.team1678.frc2017.SubsystemManager;
 import com.team1678.frc2017.subsystems.*;
 import com.team254.lib.util.*;
-import com.team254.lib.wpilib.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -61,7 +54,7 @@ public class Robot<Turret> extends TimedRobot {
 
   private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
   private final Drive mDrive = Drive.getInstance();
-  private final Indexer mIndexer = Indexer.getInstance();
+  private final Magazine mMagazine = Magazine.getInstance();
   private final Infrastructure mInfrastructure = Infrastructure.getInstance();
   private final Limelight mLimelight = Limelight.getInstance();
 
@@ -129,7 +122,7 @@ public class Robot<Turret> extends TimedRobot {
               mLimelight,
               mIntake,
               mGearIntake,
-              mIndexer,
+              mMagazine,
               mShooter,
               mTrigger,
               mSuperstructure,
