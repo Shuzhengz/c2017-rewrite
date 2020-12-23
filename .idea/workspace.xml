@@ -104,19 +104,6 @@
     </option>
   </component>
   <component name="RunManager" selected="Gradle.c2017-rewrite [build]">
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="c2017-rewrite [:build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -249,6 +236,7 @@
       <workItem from="1608666805090" duration="6943000" />
       <workItem from="1608686415752" duration="2187000" />
       <workItem from="1608699950767" duration="2316000" />
+      <workItem from="1608750384625" duration="939000" />
     </task>
     <servers />
   </component>
