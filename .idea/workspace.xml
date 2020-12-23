@@ -23,12 +23,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ff4a333e-cd70-4132-9132-734ad29d7691" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/Robot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/Robot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/RobotState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/RobotState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/controlboard/ControlBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/controlboard/ControlBoard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/controlboard/GamepadButtonControlBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/controlboard/GamepadButtonControlBoard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/Canifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/Canifier.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/superstructure/Superstructure.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/superstructure/Superstructure.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,6 +89,9 @@
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/java/com/team1678/frc2017/subsystems/superstructure/shooter" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.team1678.lib" />
     </key>
   </component>
   <component name="RunAnythingCache">
@@ -250,7 +248,7 @@
       <workItem from="1608598567821" duration="5977000" />
       <workItem from="1608666805090" duration="6943000" />
       <workItem from="1608686415752" duration="2187000" />
-      <workItem from="1608699950767" duration="1230000" />
+      <workItem from="1608699950767" duration="2316000" />
     </task>
     <servers />
   </component>
