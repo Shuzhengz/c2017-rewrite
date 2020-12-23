@@ -5,12 +5,12 @@ import com.team1678.frc2017.loops.ILooper;
 import com.team1678.frc2017.loops.Loop;
 import com.team1678.frc2017.subsystems.Subsystem;
 
-import com.team254.lib.drivers.TalonFXFactory;
+import com.team254.lib.drivers.TalonSRXFactory;
 import com.team254.lib.util.ReflectingCSVWriter;
 import com.team254.lib.util.TimeDelayedBoolean;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,7 +32,6 @@ public class GearIntake extends Subsystem {
     private PeriodicIO mPeriodicIO = new PeriodicIO();
 
     private double mGearIntakeVoltage = 0;
-    private boolean intake_down = false;
     private boolean current_spiked = false;
     private int pickup_timer = 0;
 
@@ -46,7 +45,7 @@ public class GearIntake extends Subsystem {
 
     private TimeDelayedBoolean mGearIntakeSolenoidTimer = new TimeDelayedBoolean();
 
-    private final TalonFX mMaster;
+    private final TalonSRX mMaster;
 
     private Solenoid mDeploySolenoid;
 
@@ -55,7 +54,7 @@ public class GearIntake extends Subsystem {
     private ReflectingCSVWriter<PeriodicIO> mCSVWriter = null;
 
     private GearIntake(){
-        mMaster = TalonFXFactory.createDefaultTalon(Constants.kGearIntakeRollerId);
+        mMaster = TalonSRXFactory.createDefaultTalon(Constants.kGearIntakeRollerId);
         mDeploySolenoid = Constants.makeSolenoidForId(Constants.kDeployGearSolenoidId);
     }
 
@@ -131,44 +130,45 @@ public class GearIntake extends Subsystem {
         switch (mState) {
             case IDLE:
                 mGearIntakeVoltage = 0.0;
-                intake_down = false;
+                mPeriodicIO.deploy = false;
                 break;
             case INTAKING:
                 mGearIntakeVoltage = kGearIntakeVoltage;
-                intake_down = true;
+                mPeriodicIO.deploy = true;
                 if (mPeriodicIO.current > kCurrentThreshold) {
                     current_spiked = true;
                     mState = State.PICKING_UP;
                     pickup_timer = kPickupTicks;
                     mGearIntakeVoltage = kPickupVoltage;
                 }
+                mPeriodicIO.deploy = true;
                 break;
             case DROP_BALL_WITH_GEAR:
                 mGearIntakeVoltage = 2.5;
-                intake_down = true;
+                mPeriodicIO.deploy = true;
                 break;
             case DROP_BALL_WITHOUT_GEAR:
                 mGearIntakeVoltage = 0;
-                intake_down = true;
+                mPeriodicIO.deploy = true;
                 break;
             case PICKING_UP:
                 mGearIntakeVoltage = kPickupVoltage;
-                intake_down = false;
+                mPeriodicIO.deploy = false;
                 if (--pickup_timer < 0) {
                     mState = State.CARRYING;
                 }
                 break;
             case CARRYING:
                 mGearIntakeVoltage = kCarryVoltage;
-                intake_down = false;
+                mPeriodicIO.deploy = false;
                 break;
             case SCORING:
                 mGearIntakeVoltage = kScoreVoltage;
-                intake_down = false;
+                mPeriodicIO.deploy = false;
                 break;
             case OUTTAKING:
                 mGearIntakeVoltage = kOuttakeVoltage;
-                intake_down = true;
+                mPeriodicIO.deploy = true;
         }
     }
 
